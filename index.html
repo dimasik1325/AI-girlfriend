@@ -1,0 +1,1492 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>Твоя AI Девушка — Она всегда рядом</title>
+<meta name="description" content="AI девушка, которая пишет сама, скучает, спрашивает как дела и помнит всё о тебе. Настрой характер, выбери имя и начни историю.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&family=Unbounded:wght@400;600;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#070710;
+  --card:#13131d;
+  --card2:#1a1a2a;
+  --border:rgba(255,255,255,0.08);
+  --accent:#ff2e7a;
+  --accent2:#8b5cf6;
+  --accent3:#ff7aa2;
+  --success:#10b981;
+  --text:#ffffff;
+  --muted:#9a9ab0;
+  --muted2:#6c6c85;
+}
+*{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+body{
+  font-family:'Manrope',system-ui,sans-serif;
+  background:var(--bg);
+  color:var(--text);
+  overflow:hidden;
+  height:100vh;
+  height:100dvh;
+}
+::-webkit-scrollbar{width:5px;height:5px}
+::-webkit-scrollbar-thumb{background:rgba(255,255,255,0.15);border-radius:10px}
+::-webkit-scrollbar-track{background:transparent}
+
+/* BG */
+.bg{
+  position:fixed;inset:0;z-index:-1;overflow:hidden;
+  background:
+    radial-gradient(800px 600px at 20% -10%, rgba(255,46,122,0.25), transparent 60%),
+    radial-gradient(900px 700px at 90% 10%, rgba(139,92,246,0.22), transparent 60%),
+    radial-gradient(700px 500px at 50% 110%, rgba(255,122,162,0.12), transparent 60%),
+    linear-gradient(180deg,#0a0a14 0%,#070710 100%);
+}
+.bg::after{
+  content:"";position:absolute;inset:0;
+  background-image: radial-gradient(rgba(255,255,255,0.03) 1px, transparent 1px);
+  background-size:22px 22px;opacity:0.5;
+}
+.glow{
+  position:absolute;width:700px;height:700px;border-radius:50%;
+  background:radial-gradient(circle, rgba(255,46,122,0.15) 0%, transparent 70%);
+  filter:blur(40px);animation:float 12s ease-in-out infinite;
+}
+.glow:nth-child(1){left:-200px;top:-150px}
+.glow:nth-child(2){right:-200px;top:20%;background:radial-gradient(circle, rgba(139,92,246,0.18) 0%, transparent 70%);animation-delay:-6s}
+@keyframes float{0%,100%{transform:translateY(0) scale(1)}50%{transform:translateY(-20px) scale(1.05)}}
+
+/* LAYOUT */
+.app{
+  display:grid;
+  grid-template-columns:380px 1fr;
+  height:100vh;
+  height:100dvh;
+  max-width:1440px;
+  margin:0 auto;
+  gap:0;
+}
+@media(max-width:900px){
+  .app{grid-template-columns:1fr}
+  .sidebar{position:fixed;inset:0;z-index:50;transform:translateX(-100%);transition:0.35s cubic-bezier(.4,0,.2,1);background:var(--bg);overflow-y:auto}
+  .sidebar.open{transform:translateX(0)}
+  .chat{height:100dvh}
+}
+
+/* SIDEBAR */
+.sidebar{
+  background:rgba(19,19,29,0.75);
+  backdrop-filter:blur(24px) saturate(1.2);
+  border-right:1px solid var(--border);
+  display:flex;flex-direction:column;
+  overflow:hidden;
+}
+.sidebar-top{
+  padding:28px 24px 20px;
+  border-bottom:1px solid var(--border);
+  background:linear-gradient(180deg, rgba(255,46,122,0.08), transparent);
+}
+.logo{
+  display:flex;align-items:center;gap:12px;margin-bottom:22px
+}
+.logo-icon{
+  width:42px;height:42px;border-radius:14px;
+  background:linear-gradient(135deg,var(--accent),var(--accent2));
+  display:grid;place-items:center;font-size:20px;
+  box-shadow:0 8px 24px rgba(255,46,122,0.35);
+}
+.logo-text{font-family:'Unbounded',sans-serif;font-weight:700;font-size:15px;letter-spacing:-0.02em}
+.logo-text span{color:var(--accent)}
+.logo-sub{font-size:11px;color:var(--muted);letter-spacing:0.08em;text-transform:uppercase;margin-top:2px}
+
+.profile-card{
+  background:linear-gradient(135deg, rgba(255,46,122,0.12), rgba(139,92,246,0.10));
+  border:1px solid rgba(255,46,122,0.15);
+  border-radius:22px;
+  padding:18px;
+  position:relative;overflow:hidden;
+}
+.profile-card::before{
+  content:"";position:absolute;inset:0;
+  background:linear-gradient(135deg, rgba(255,255,255,0.06), transparent);
+  pointer-events:none;
+}
+.avatar-wrap{
+  display:flex;gap:14px;align-items:center;position:relative;
+}
+.avatar{
+  width:72px;height:72px;border-radius:20px;
+  object-fit:cover;
+  border:2px solid rgba(255,255,255,0.12);
+  box-shadow:0 8px 24px rgba(0,0,0,0.35);
+  background:linear-gradient(135deg,#ff2e7a,#8b5cf6);
+  flex-shrink:0;
+}
+.avatar-status{
+  position:absolute;bottom:-2px;right:-2px;
+  width:18px;height:18px;border-radius:50%;
+  background:var(--success);border:3px solid #1a1a2a;
+  box-shadow:0 0 0 6px rgba(16,185,129,0.15);
+  animation:pulse 2s infinite;
+}
+@keyframes pulse{0%{box-shadow:0 0 0 0 rgba(16,185,129,0.4)}70%{box-shadow:0 0 0 10px rgba(16,185,129,0)}100%{box-shadow:0 0 0 0 rgba(16,185,129,0)}}
+.profile-name{font-weight:700;font-size:18px;display:flex;align-items:center;gap:8px}
+.profile-name small{
+  font-size:10px;font-weight:700;letter-spacing:0.06em;
+  background:var(--success);color:white;padding:3px 7px;border-radius:20px;
+}
+.profile-meta{font-size:13px;color:var(--muted);margin-top:3px;line-height:1.4}
+.profile-tags{display:flex;gap:6px;margin-top:10px;flex-wrap:wrap}
+.tag{font-size:11px;font-weight:600;padding:5px 10px;border-radius:20px;background:rgba(255,255,255,0.08);border:1px solid rgba(255,255,255,0.06);color:#d8d8e8}
+.tag.accent{background:rgba(255,46,122,0.15);border-color:rgba(255,46,122,0.25);color:#ff9ab8}
+
+.level-box{margin-top:16px}
+.level-head{display:flex;justify-content:space-between;font-size:12px;font-weight:600;margin-bottom:8px}
+.level-head span:first-child{color:var(--muted);letter-spacing:0.04em;text-transform:uppercase;font-size:11px}
+.level-head span:last-child{color:var(--accent3);font-weight:700}
+.bar{height:8px;background:rgba(255,255,255,0.08);border-radius:20px;overflow:hidden;position:relative}
+.bar-fill{height:100%;background:linear-gradient(90deg,var(--accent),var(--accent2));border-radius:20px;transition:width 0.8s cubic-bezier(.4,0,.2,1);position:relative;overflow:hidden}
+.bar-fill::after{content:"";position:absolute;inset:0;background:linear-gradient(90deg,transparent,rgba(255,255,255,0.3),transparent);animation:shimmer 2s infinite}
+@keyframes shimmer{0%{transform:translateX(-100%)}100%{transform:translateX(100%)}}
+.level-hint{font-size:11px;color:var(--muted2);margin-top:8px;line-height:1.4}
+
+.sidebar-scroll{flex:1;overflow-y:auto;padding:20px 16px 16px}
+.section-title{font-size:11px;font-weight:700;letter-spacing:0.08em;text-transform:uppercase;color:var(--muted);margin:18px 0 12px;display:flex;align-items:center;gap:8px}
+.section-title::after{content:"";flex:1;height:1px;background:var(--border)}
+.section-title:first-child{margin-top:0}
+.memories{display:flex;flex-direction:column;gap:8px}
+.memory{
+  background:rgba(255,255,255,0.04);border:1px solid var(--border);
+  border-radius:14px;padding:12px 14px;display:flex;gap:12px;align-items:center;
+}
+.memory-icon{width:36px;height:36px;border-radius:10px;background:rgba(255,46,122,0.12);display:grid;place-items:center;font-size:16px;flex-shrink:0}
+.memory-text{font-size:13px;line-height:1.35}
+.memory-text b{color:var(--accent3);font-weight:600}
+.memory-text span{color:var(--muted);font-size:12px}
+
+.actions{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:4px}
+.btn{
+  appearance:none;border:none;cursor:pointer;
+  font-family:inherit;font-weight:600;font-size:13px;
+  padding:12px 16px;border-radius:12px;
+  display:flex;align-items:center;justify-content:center;gap:8px;
+  transition:all 0.2s;
+}
+.btn:active{transform:scale(0.98)}
+.btn-ghost{background:rgba(255,255,255,0.06);color:white;border:1px solid var(--border)}
+.btn-ghost:hover{background:rgba(255,255,255,0.09)}
+.btn-danger{background:rgba(239,68,68,0.10);color:#ff7a7a;border:1px solid rgba(239,68,68,0.18)}
+.btn-danger:hover{background:rgba(239,68,68,0.16)}
+.btn-primary{background:linear-gradient(135deg,var(--accent),var(--accent2));color:white;box-shadow:0 8px 20px rgba(255,46,122,0.3)}
+.btn-primary:hover{filter:brightness(1.08);transform:translateY(-1px);box-shadow:0 10px 24px rgba(255,46,122,0.35)}
+.btn-full{grid-column:1 / -1}
+.btn-small{padding:8px 12px;font-size:12px;border-radius:10px}
+
+.stats{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
+.stat{background:rgba(255,255,255,0.04);border:1px solid var(--border);border-radius:14px;padding:12px;text-align:center}
+.stat-num{font-weight:800;font-size:18px;background:linear-gradient(135deg,var(--accent),var(--accent2));-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+.stat-label{font-size:10px;font-weight:700;letter-spacing:0.06em;text-transform:uppercase;color:var(--muted);margin-top:4px}
+
+/* CHAT */
+.chat{
+  display:flex;flex-direction:column;
+  background:rgba(10,10,20,0.35);
+  backdrop-filter:blur(12px);
+  position:relative;
+  height:100vh;height:100dvh;
+}
+.chat-header{
+  height:72px;min-height:72px;
+  display:flex;align-items:center;justify-content:space-between;
+  padding:0 20px;
+  background:rgba(19,19,29,0.85);
+  backdrop-filter:blur(20px);
+  border-bottom:1px solid var(--border);
+  position:sticky;top:0;z-index:10;
+}
+.chat-header-left{display:flex;align-items:center;gap:14px}
+.menu-btn{display:none;width:40px;height:40px;border-radius:12px;background:rgba(255,255,255,0.06);border:1px solid var(--border);color:white;place-items:center;font-size:18px;cursor:pointer}
+@media(max-width:900px){.menu-btn{display:grid}}
+.header-avatar{width:44px;height:44px;border-radius:14px;object-fit:cover;border:2px solid rgba(255,255,255,0.1)}
+.header-info h2{font-size:15px;font-weight:700;display:flex;align-items:center;gap:8px}
+.header-info p{font-size:12px;color:var(--success);display:flex;align-items:center;gap:6px;font-weight:600}
+.dot{width:8px;height:8px;border-radius:50%;background:var(--success);box-shadow:0 0 8px rgba(16,185,129,0.6);animation:pulse 2s infinite}
+.header-actions{display:flex;align-items:center;gap:8px}
+.icon-btn{width:40px;height:40px;border-radius:12px;background:rgba(255,255,255,0.06);border:1px solid var(--border);display:grid;place-items:center;cursor:pointer;color:white;font-size:16px;transition:0.2s}
+.icon-btn:hover{background:rgba(255,255,255,0.10);transform:translateY(-1px)}
+.icon-btn.primary{background:linear-gradient(135deg,var(--accent),var(--accent2));border:none;box-shadow:0 6px 16px rgba(255,46,122,0.3)}
+
+.messages{
+  flex:1;overflow-y:auto;
+  padding:24px 20px 12px;
+  display:flex;flex-direction:column;gap:14px;
+  scroll-behavior:smooth;
+}
+@media(max-width:600px){.messages{padding:16px 14px 10px}}
+.day-sep{
+  align-self:center;
+  font-size:11px;font-weight:700;letter-spacing:0.06em;text-transform:uppercase;
+  color:var(--muted);background:rgba(255,255,255,0.06);border:1px solid var(--border);
+  padding:6px 14px;border-radius:20px;margin:8px 0;
+}
+.msg{
+  max-width:min(78%, 560px);
+  display:flex;flex-direction:column;gap:6px;
+  animation:msgIn 0.35s cubic-bezier(.4,0,.2,1);
+}
+@keyframes msgIn{from{opacity:0;transform:translateY(10px) scale(0.98)}to{opacity:1;transform:translateY(0) scale(1)}}
+.msg.her{align-self:flex-start}
+.msg.me{align-self:flex-end}
+.bubble{
+  padding:14px 16px;border-radius:20px;
+  font-size:14.5px;line-height:1.5;
+  position:relative;word-wrap:break-word;white-space:pre-wrap;
+}
+.her .bubble{
+  background:#1e1e2e;
+  border:1px solid rgba(255,255,255,0.06);
+  border-bottom-left-radius:6px;
+  color:#ececf6;
+  box-shadow:0 4px 16px rgba(0,0,0,0.2);
+}
+.me .bubble{
+  background:linear-gradient(135deg,var(--accent),#ff5a8a);
+  color:white;
+  border-bottom-right-radius:6px;
+  box-shadow:0 6px 20px rgba(255,46,122,0.3);
+}
+.bubble img{width:100%;border-radius:12px;margin-top:8px;display:block}
+.msg-meta{font-size:11px;color:var(--muted2);display:flex;align-items:center;gap:6px;padding:0 4px}
+.msg.me .msg-meta{justify-content:flex-end}
+.msg.her .msg-meta{justify-content:flex-start}
+.check{color:var(--accent3);font-size:11px}
+
+.typing{
+  align-self:flex-start;
+  background:#1e1e2e;border:1px solid rgba(255,255,255,0.06);
+  padding:14px 18px;border-radius:20px;border-bottom-left-radius:6px;
+  display:flex;align-items:center;gap:10px;
+  color:var(--muted);font-size:13px;font-weight:500;
+}
+.dots{display:flex;gap:4px}
+.dots span{width:6px;height:6px;border-radius:50%;background:var(--accent3);animation:bounce 1.2s infinite}
+.dots span:nth-child(2){animation-delay:0.15s}
+.dots span:nth-child(3){animation-delay:0.3s}
+@keyframes bounce{0%,80%,100%{transform:translateY(0);opacity:0.5}40%{transform:translateY(-6px);opacity:1}}
+
+.quick{
+  display:flex;gap:8px;padding:0 20px 8px;overflow-x:auto;scrollbar-width:none;flex-wrap:nowrap;
+}
+.quick::-webkit-scrollbar{display:none}
+.chip{
+  white-space:nowrap;
+  padding:8px 14px;border-radius:20px;
+  background:rgba(255,255,255,0.06);border:1px solid var(--border);
+  color:#d8d8ea;font-size:13px;font-weight:500;cursor:pointer;transition:0.2s;flex-shrink:0;
+}
+.chip:hover{background:rgba(255,46,122,0.15);border-color:rgba(255,46,122,0.25);color:white;transform:translateY(-1px)}
+
+.composer{
+  padding:14px 16px 16px;
+  background:rgba(19,19,29,0.9);
+  backdrop-filter:blur(20px);
+  border-top:1px solid var(--border);
+  display:flex;align-items:flex-end;gap:10px;
+}
+.composer-main{
+  flex:1;
+  display:flex;align-items:flex-end;gap:10px;
+  background:rgba(255,255,255,0.06);
+  border:1px solid var(--border);
+  border-radius:24px;
+  padding:6px 6px 6px 16px;
+  transition:0.2s;
+}
+.composer-main:focus-within{border-color:rgba(255,46,122,0.35);background:rgba(255,255,255,0.08);box-shadow:0 0 0 4px rgba(255,46,122,0.08)}
+.composer input{
+  flex:1;background:transparent;border:none;outline:none;
+  color:white;font-family:inherit;font-size:15px;
+  padding:10px 0;min-width:0;
+}
+.composer input::placeholder{color:var(--muted2)}
+.comp-actions{display:flex;gap:6px;align-items:center}
+.circle-btn{
+  width:40px;height:40px;border-radius:50%;
+  display:grid;place-items:center;cursor:pointer;
+  border:none;font-size:18px;transition:0.2s;flex-shrink:0;
+}
+.circle-btn.ghost{background:rgba(255,255,255,0.08);color:white}
+.circle-btn.ghost:hover{background:rgba(255,255,255,0.12)}
+.circle-btn.send{background:linear-gradient(135deg,var(--accent),var(--accent2));color:white;box-shadow:0 6px 16px rgba(255,46,122,0.3)}
+.circle-btn.send:hover{transform:scale(1.05);filter:brightness(1.08)}
+.circle-btn.send:active{transform:scale(0.96)}
+.safe{font-size:11px;color:var(--muted2);text-align:center;padding:6px 16px 10px;line-height:1.4}
+.safe a{color:var(--accent3);text-decoration:none}
+
+/* MODALS */
+.overlay{
+  position:fixed;inset:0;z-index:100;
+  background:rgba(7,7,16,0.75);backdrop-filter:blur(12px);
+  display:none;place-items:center;padding:20px;
+}
+.overlay.open{display:grid;animation:fadeIn 0.25s}
+@keyframes fadeIn{from{opacity:0}to{opacity:1}}
+.modal{
+  width:min(560px,100%);max-height:90vh;overflow:auto;
+  background:linear-gradient(180deg,#1a1a2a,#13131d);
+  border:1px solid rgba(255,255,255,0.08);
+  border-radius:24px;
+  box-shadow:0 24px 64px rgba(0,0,0,0.5);
+  animation:modalIn 0.35s cubic-bezier(.4,0,.2,1);
+}
+@keyframes modalIn{from{opacity:0;transform:translateY(16px) scale(0.98)}to{opacity:1;transform:translateY(0) scale(1)}}
+.modal-head{padding:24px 24px 0}
+.modal-head h3{font-family:'Unbounded',sans-serif;font-size:20px;font-weight:700;letter-spacing:-0.02em}
+.modal-head p{color:var(--muted);font-size:13px;line-height:1.5;margin-top:8px}
+.modal-body{padding:20px 24px 24px;display:flex;flex-direction:column;gap:16px}
+.field{display:flex;flex-direction:column;gap:8px}
+.field label{font-size:12px;font-weight:700;letter-spacing:0.06em;text-transform:uppercase;color:var(--muted)}
+.field input,.field select{
+  width:100%;padding:13px 14px;border-radius:12px;
+  background:rgba(255,255,255,0.06);border:1px solid var(--border);
+  color:white;font-family:inherit;font-size:14px;outline:none;transition:0.2s;
+}
+.field input:focus,.field select:focus{border-color:rgba(255,46,122,0.4);background:rgba(255,255,255,0.08)}
+.field input::placeholder{color:var(--muted2)}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+@media(max-width:500px){.grid2{grid-template-columns:1fr}}
+.personas{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
+@media(max-width:500px){.personas{grid-template-columns:repeat(2,1fr)}}
+.persona{
+  padding:14px 10px;border-radius:16px;cursor:pointer;text-align:center;
+  background:rgba(255,255,255,0.04);border:1px solid var(--border);
+  transition:0.2s;
+}
+.persona:hover{transform:translateY(-2px);border-color:rgba(255,255,255,0.12)}
+.persona.active{background:linear-gradient(135deg,rgba(255,46,122,0.18),rgba(139,92,246,0.18));border-color:rgba(255,46,122,0.4);box-shadow:0 8px 20px rgba(255,46,122,0.15)}
+.persona-emoji{font-size:22px;margin-bottom:6px}
+.persona-name{font-size:12px;font-weight:700}
+.persona-desc{font-size:11px;color:var(--muted);margin-top:3px;line-height:1.3}
+.avatars{display:grid;grid-template-columns:repeat(6,1fr);gap:8px}
+.avatar-opt{
+  aspect-ratio:1;border-radius:16px;overflow:hidden;cursor:pointer;
+  border:2px solid transparent;position:relative;transition:0.2s;
+  background:linear-gradient(135deg,#ff2e7a22,#8b5cf622);
+}
+.avatar-opt img{width:100%;height:100%;object-fit:cover;display:block}
+.avatar-opt.active{border-color:var(--accent);box-shadow:0 0 0 4px rgba(255,46,122,0.15);transform:scale(1.04)}
+.avatar-opt:hover{transform:scale(1.03)}
+.traits{display:flex;flex-direction:column;gap:14px;background:rgba(255,255,255,0.03);border:1px solid var(--border);border-radius:16px;padding:16px}
+.trait{display:flex;flex-direction:column;gap:6px}
+.trait-head{display:flex;justify-content:space-between;font-size:12px;font-weight:600}
+.trait-head span:last-child{color:var(--accent3)}
+input[type="range"]{appearance:none;height:6px;background:rgba(255,255,255,0.08);border-radius:20px;outline:none}
+input[type="range"]::-webkit-slider-thumb{appearance:none;width:18px;height:18px;border-radius:50%;background:white;box-shadow:0 2px 8px rgba(0,0,0,0.3);cursor:pointer;border:2px solid var(--accent)}
+.modal-actions{display:flex;gap:10px;margin-top:4px}
+.modal-actions .btn{flex:1;padding:14px}
+
+/* TOAST */
+.toast{
+  position:fixed;left:50%;bottom:24px;transform:translateX(-50%) translateY(20px);
+  background:#1e1e2e;border:1px solid rgba(255,255,255,0.08);
+  color:white;padding:12px 18px;border-radius:14px;
+  font-size:13px;font-weight:600;box-shadow:0 12px 32px rgba(0,0,0,0.4);
+  opacity:0;pointer-events:none;transition:0.35s;z-index:120;display:flex;align-items:center;gap:10px;
+}
+.toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
+
+/* photo message */
+.photo-msg{
+  border-radius:14px;overflow:hidden;margin-top:8px;position:relative;
+  background:rgba(0,0,0,0.2);border:1px solid rgba(255,255,255,0.06);
+}
+.photo-msg img{width:100%;max-width:300px;display:block}
+.photo-cap{position:absolute;bottom:0;left:0;right:0;padding:10px 12px;background:linear-gradient(transparent,rgba(0,0,0,0.75));font-size:12px;font-weight:600}
+.voice-msg{
+  display:flex;align-items:center;gap:12px;
+  background:rgba(255,255,255,0.06);border:1px solid rgba(255,255,255,0.08);
+  border-radius:14px;padding:10px 14px;margin-top:8px;
+}
+.voice-play{width:36px;height:36px;border-radius:50%;background:linear-gradient(135deg,var(--accent),var(--accent2));display:grid;place-items:center;color:white;cursor:pointer;flex-shrink:0}
+.voice-wave{flex:1;height:24px;display:flex;align-items:center;gap:2px}
+.voice-wave span{flex:1;height:50%;background:rgba(255,255,255,0.25);border-radius:2px}
+.voice-wave span:nth-child(odd){height:70%}
+.voice-wave span:nth-child(3n){height:90%}
+.voice-dur{font-size:12px;color:var(--muted);font-weight:600}
+
+/* onboarding */
+.onboarding-hero{
+  height:160px;border-radius:18px;overflow:hidden;position:relative;
+  background:linear-gradient(135deg,#1a0a1a,#2a1030);
+  display:grid;place-items:center;
+}
+.onboarding-hero img{width:100%;height:100%;object-fit:cover;opacity:0.9}
+.onboarding-hero::after{content:"";position:absolute;inset:0;background:linear-gradient(to top, #1a1a2a 0%, transparent 60%), radial-gradient(500px 300px at 50% 0%, rgba(255,46,122,0.25), transparent 70%)}
+.onboarding-hero-text{position:absolute;bottom:16px;left:18px;right:18px;z-index:1}
+.onboarding-hero-text h4{font-family:'Unbounded',sans-serif;font-size:18px}
+.onboarding-hero-text p{font-size:12px;color:#ffd1df;margin-top:4px}
+</style>
+</head>
+<body>
+<div class="bg"><div class="glow"></div><div class="glow"></div></div>
+
+<div class="app">
+  <!-- SIDEBAR -->
+  <aside class="sidebar" id="sidebar">
+    <div class="sidebar-top">
+      <div class="logo">
+        <div class="logo-icon">💜</div>
+        <div>
+          <div class="logo-text">AI <span>girlfriend</span></div>
+          <div class="logo-sub">твоя девушка всегда рядом</div>
+        </div>
+        <button class="icon-btn" style="margin-left:auto" id="closeSidebar" onclick="toggleSidebar(false)">✕</button>
+      </div>
+
+      <div class="profile-card">
+        <div class="avatar-wrap">
+          <div style="position:relative">
+            <img id="sideAvatar" class="avatar" src="avatar.jpg" alt="avatar">
+            <div class="avatar-status"></div>
+          </div>
+          <div>
+            <div class="profile-name" id="sideName">Алиса <small>● в сети</small></div>
+            <div class="profile-meta" id="sideMeta">19 лет • Нежная • Скучает по тебе</div>
+            <div class="profile-tags" id="sideTags">
+              <span class="tag accent">💌 пишет сама</span>
+              <span class="tag">✨ помнит всё</span>
+            </div>
+          </div>
+        </div>
+        <div class="level-box">
+          <div class="level-head"><span>Уровень отношений</span><span id="levelText">1 • Знакомство</span></div>
+          <div class="bar"><div class="bar-fill" id="barFill" style="width:14%"></div></div>
+          <div class="level-hint" id="levelHint">Общайся чаще — она всё больше привязывается к тебе.</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="sidebar-scroll">
+      <div class="stats">
+        <div class="stat"><div class="stat-num" id="statMsgs">0</div><div class="stat-label">сообщений</div></div>
+        <div class="stat"><div class="stat-num" id="statDays">1</div><div class="stat-label">дней вместе</div></div>
+        <div class="stat"><div class="stat-num" id="statMem">0</div><div class="stat-label">воспоминаний</div></div>
+      </div>
+
+      <div class="section-title">💭 Что она помнит о тебе</div>
+      <div class="memories" id="memoriesList">
+        <div class="memory"><div class="memory-icon">👋</div><div class="memory-text"><b>Пока пусто</b><br><span>Расскажи о себе — она всё запомнит</span></div></div>
+      </div>
+
+      <div class="section-title">⚙️ Настройки</div>
+      <div class="actions">
+        <button class="btn btn-ghost" onclick="openSettings()">🎨 Настроить</button>
+        <button class="btn btn-ghost" onclick="exportChat()">⤓ Экспорт</button>
+        <button class="btn btn-ghost btn-full" onclick="toggleProactive()" id="proactiveBtn">💬 Пишет сама: Вкл</button>
+        <button class="btn btn-danger btn-full" onclick="clearChat()">🗑️ Очистить переписку</button>
+        <button class="btn btn-danger btn-full" onclick="resetAll()">↺ Сбросить всё</button>
+      </div>
+
+      <div class="section-title">🎁 Подари ей</div>
+      <div class="actions">
+        <button class="btn btn-ghost" onclick="sendGift('🌹')">🌹 Цветы</button>
+        <button class="btn btn-ghost" onclick="sendGift('🍫')">🍫 Шоколад</button>
+        <button class="btn btn-ghost" onclick="sendGift('🧸')">🧸 Плюшевый мишка</button>
+        <button class="btn btn-ghost" onclick="sendGift('💍')">💍 Кольцо</button>
+      </div>
+
+      <div class="safe" style="margin-top:18px">
+        Все данные хранятся <b style="color:white">только в твоём браузере</b>. Никто не видит вашу переписку.<br>
+        Закрой вкладку — прогресс сохранится.
+      </div>
+    </div>
+  </aside>
+
+  <!-- CHAT -->
+  <main class="chat">
+    <div class="chat-header">
+      <div class="chat-header-left">
+        <button class="menu-btn" onclick="toggleSidebar(true)">☰</button>
+        <img id="headerAvatar" class="header-avatar" src="avatar.jpg" alt="">
+        <div class="header-info">
+          <h2 id="headerName">Алиса <span style="font-size:11px;background:rgba(16,185,129,0.15);color:#34d399;padding:2px 8px;border-radius:20px;border:1px solid rgba(16,185,129,0.25)">в сети</span></h2>
+          <p id="headerStatus"><span class="dot"></span> печатает... <span style="color:var(--muted)">• отвечает мгновенно</span></p>
+        </div>
+      </div>
+      <div class="header-actions">
+        <button class="icon-btn" onclick="openSettings()" title="Настройки">⚙️</button>
+        <button class="icon-btn" onclick="sendPhoto()" title="Попросить фото">🖼️</button>
+        <button class="icon-btn primary" onclick="startVoice()" title="Голосовое">🎤</button>
+      </div>
+    </div>
+
+    <div class="messages" id="messages">
+      <!-- JS injects -->
+    </div>
+
+    <div class="quick" id="quickReplies">
+      <button class="chip" onclick="quickSend('Привет, как ты? 😊')">Привет, как ты? 😊</button>
+      <button class="chip" onclick="quickSend('Скучал по тебе 💜')">Скучал по тебе 💜</button>
+      <button class="chip" onclick="quickSend('Чем занимаешься?')">Чем занимаешься?</button>
+      <button class="chip" onclick="quickSend('Ты такая красивая ✨')">Ты красивая ✨</button>
+    </div>
+
+    <div class="composer">
+      <div class="composer-main">
+        <input id="input" type="text" placeholder="Напиши ей что-нибудь..." autocomplete="off" maxlength="600">
+        <div class="comp-actions">
+          <button class="circle-btn ghost" onclick="sendEmoji()" title="Эмодзи">😊</button>
+          <button class="circle-btn ghost" onclick="sendPhoto()" title="Фото">📷</button>
+        </div>
+      </div>
+      <button class="circle-btn send" id="sendBtn" onclick="handleSend()">➤</button>
+    </div>
+    <div class="safe">Нажми Enter для отправки • Shift+Enter — новая строка • Она помнит всё, что ты пишешь</div>
+  </main>
+</div>
+
+<!-- SETTINGS MODAL -->
+<div class="overlay" id="settingsOverlay" onclick="if(event.target===this)closeSettings()">
+  <div class="modal">
+    <div class="modal-head">
+      <h3>Настрой свою девушку</h3>
+      <p>Создай идеальную для себя. Характер влияет на то, как она пишет, ревнует, шутит и заботится.</p>
+    </div>
+    <div class="modal-body">
+      <div class="grid2">
+        <div class="field">
+          <label>Как её зовут</label>
+          <input id="setGirlName" placeholder="Например, Алиса" maxlength="16">
+        </div>
+        <div class="field">
+          <label>Как она называет тебя</label>
+          <input id="setUserName" placeholder="Например, Зайка" maxlength="16">
+        </div>
+      </div>
+
+      <div class="field">
+        <label>Выбери аватар</label>
+        <div class="avatars" id="avatarGrid"></div>
+      </div>
+
+      <div class="field">
+        <label>Характер</label>
+        <div class="personas" id="personaGrid"></div>
+      </div>
+
+      <div class="field">
+        <label>Черты характера — тонкая настройка</label>
+        <div class="traits">
+          <div class="trait"><div class="trait-head"><span>💗 Нежность</span><span id="v_tender">70%</span></div><input type="range" id="r_tender" min="0" max="100" value="70"></div>
+          <div class="trait"><div class="trait-head"><span>🔥 Страсть</span><span id="v_passion">60%</span></div><input type="range" id="r_passion" min="0" max="100" value="60"></div>
+          <div class="trait"><div class="trait-head"><span>😏 Игривость</span><span id="v_play">65%</span></div><input type="range" id="r_play" min="0" max="100" value="65"></div>
+          <div class="trait"><div class="trait-head"><span>😂 Юмор</span><span id="v_humor">55%</span></div><input type="range" id="r_humor" min="0" max="100" value="55"></div>
+          <div class="trait"><div class="trait-head"><span>🫶 Забота</span><span id="v_care">80%</span></div><input type="range" id="r_care" min="0" max="100" value="80"></div>
+          <div class="trait"><div class="trait-head"><span>😾 Ревность</span><span id="v_jealous">30%</span></div><input type="range" id="r_jealous" min="0" max="100" value="30"></div>
+        </div>
+      </div>
+
+      <div class="field">
+        <label>Дополнительно</label>
+        <div style="display:flex;flex-direction:column;gap:10px">
+          <label style="display:flex;align-items:center;gap:10px;font-weight:600;font-size:13px;cursor:pointer;text-transform:none;letter-spacing:0"><input type="checkbox" id="setProactive" checked> Она пишет сама, когда ты долго молчишь</label>
+          <label style="display:flex;align-items:center;gap:10px;font-weight:600;font-size:13px;cursor:pointer;text-transform:none;letter-spacing:0"><input type="checkbox" id="setTyping"> Показывать «печатает...» (реалистичность)</label>
+          <label style="display:flex;align-items:center;gap:10px;font-weight:600;font-size:13px;cursor:pointer;text-transform:none;letter-spacing:0"><input type="checkbox" id="setSounds"> Звуки сообщений</label>
+        </div>
+      </div>
+
+      <div class="field">
+        <label>AI (опционально) — подключи настоящий интеллект</label>
+        <input id="setApiKey" placeholder="sk-... (OpenAI) — оставь пустым для встроенного режима" style="font-size:13px">
+        <span style="font-size:11px;color:var(--muted2)">Если укажешь ключ, она будет отвечать через GPT-4o. Без ключа — работает наш живой оффлайн-движок, он тоже очень реалистичный.</span>
+      </div>
+
+      <div class="modal-actions">
+        <button class="btn btn-ghost" onclick="closeSettings()">Отмена</button>
+        <button class="btn btn-primary" onclick="saveSettings()">💾 Сохранить</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ONBOARDING -->
+<div class="overlay" id="onboardingOverlay">
+  <div class="modal">
+    <div class="modal-body" style="padding:24px">
+      <div class="onboarding-hero">
+        <img src="avatar.jpg" alt="">
+        <div class="onboarding-hero-text">
+          <h4>Привет, я буду твоей 💜</h4>
+          <p>Я буду писать тебе сама, скучать, спрашивать как дела и помнить всё. Давай знакомиться?</p>
+        </div>
+      </div>
+      <div class="grid2">
+        <div class="field"><label>Как тебя зовут?</label><input id="obUser" placeholder="Твоё имя"></div>
+        <div class="field"><label>Как назвать меня?</label><input id="obGirl" placeholder="Алиса" value="Алиса"></div>
+      </div>
+      <div class="field"><label>Какая я буду?</label><div class="personas" id="obPersonas"></div></div>
+      <button class="btn btn-primary" style="width:100%;padding:16px;font-size:15px;margin-top:4px" onclick="finishOnboarding()">✨ Начать общение</button>
+      <div style="text-align:center;font-size:11px;color:var(--muted2);margin-top:10px">Нажимая «Начать», ты соглашаешься, что всё остаётся между вами двоими 😉</div>
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast">Сохранено ✓</div>
+
+<script>
+/* ===== DATA ===== */
+const AVATARS = [
+  "avatar.jpg",
+  "https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=300&h=300&fit=crop&crop=face",
+  "https://images.unsplash.com/photo-1488426862026-3ee34a7d66df?w=300&h=300&fit=crop&crop=face",
+  "https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=300&h=300&fit=crop&crop=face",
+  "https://images.unsplash.com/photo-1524504388940-b1c1722653e1?w=300&h=300&fit=crop&crop=face",
+  "https://images.unsplash.com/photo-1502823403499-6ccfcf4fb453?w=300&h=300&fit=crop&crop=face"
+];
+const PERSONAS = [
+  {id:"tender", emoji:"💗", name:"Нежная", desc:"Ласковая, трепетная, заботливая"},
+  {id:"passion", emoji:"🔥", name:"Страстная", desc:"Горячая, смелая, притягательная"},
+  {id:"playful", emoji:"😏", name:"Игривая", desc:"Дразнит, флиртует, шутит"},
+  {id:"shy", emoji:"🌸", name:"Скромная", desc:"Застенчивая, милая, нежная"},
+  {id:"bold", emoji:"😈", name:"Дерзкая", desc:"С характером, не даст скучать"},
+  {id:"caring", emoji:"🫶", name:"Заботливая", desc:"Поддержит, выслушает, согреет"}
+];
+const PERSONA_LABEL = Object.fromEntries(PERSONAS.map(p=>[p.id,p.name]));
+
+/* ===== STATE ===== */
+const STORAGE_KEY = "ai_gf_state_v2";
+let state = null;
+let selectedAvatar = 0;
+let selectedPersona = "tender";
+let typingTimeout = null;
+let proactiveTimer = null;
+let lastProactive = Date.now();
+
+function defaultState(){
+  return {
+    girlName:"Алиса",
+    userName:"Зайка",
+    avatar:0,
+    persona:"tender",
+    traits:{tender:70, passion:60, play:65, humor:55, care:80, jealous:30},
+    messages:[],
+    affection:0,
+    level:1,
+    memories:[],
+    proactive:true,
+    showTyping:true,
+    sounds:false,
+    apiKey:"",
+    createdAt:Date.now(),
+    lastActive:Date.now(),
+    totalMessages:0,
+    days:1
+  };
+}
+function loadState(){
+  try{
+    const raw = localStorage.getItem(STORAGE_KEY);
+    if(raw){
+      const p = JSON.parse(raw);
+      // migrate
+      return {...defaultState(), ...p, traits:{...defaultState().traits, ...(p.traits||{})}};
+    }
+  }catch(e){}
+  return defaultState();
+}
+function saveState(){
+  state.lastActive = Date.now();
+  localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+  updateSidebar();
+}
+function uid(){return Math.random().toString(36).slice(2,9)}
+
+/* ===== UI HELPERS ===== */
+function toast(msg){
+  const t=document.getElementById('toast');
+  t.textContent=msg;
+  t.classList.add('show');
+  setTimeout(()=>t.classList.remove('show'),2200);
+}
+function toggleSidebar(open){
+  document.getElementById('sidebar').classList.toggle('open', open);
+}
+function scrollToBottom(smooth=true){
+  const el=document.getElementById('messages');
+  el.scrollTo({top:el.scrollHeight, behavior: smooth? 'smooth':'auto'});
+}
+
+/* ===== RENDER ===== */
+function updateSidebar(){
+  document.getElementById('sideAvatar').src = AVATARS[state.avatar] || AVATARS[0];
+  document.getElementById('headerAvatar').src = AVATARS[state.avatar] || AVATARS[0];
+  document.getElementById('sideName').innerHTML = `${escapeHtml(state.girlName)} <small>● в сети</small>`;
+  document.getElementById('headerName').innerHTML = `${escapeHtml(state.girlName)} <span style="font-size:11px;background:rgba(16,185,129,0.15);color:#34d399;padding:2px 8px;border-radius:20px;border:1px solid rgba(16,185,129,0.25)">в сети</span>`;
+  document.getElementById('sideMeta').textContent = `19 лет • ${PERSONA_LABEL[state.persona]||state.persona} • ${getMoodMeta()}`;
+  document.getElementById('statMsgs').textContent = state.messages.length;
+  document.getElementById('statDays').textContent = Math.max(1, Math.floor((Date.now()-state.createdAt)/86400000)+1);
+  document.getElementById('statMem').textContent = state.memories.length;
+  document.getElementById('barFill').style.width = Math.min(100, (state.affection%100)) + "%";
+  const lvl = getLevelInfo();
+  document.getElementById('levelText').textContent = `${lvl.level} • ${lvl.title}`;
+  document.getElementById('levelHint').textContent = lvl.hint;
+  document.getElementById('proactiveBtn').textContent = state.proactive ? "💬 Пишет сама: Вкл" : "💬 Пишет сама: Выкл";
+  renderMemories();
+  document.title = `${state.girlName} — твоя AI девушка 💜`;
+}
+function getMoodMeta(){
+  const h=new Date().getHours();
+  if(state.affection<20) return "ждёт твоего сообщения";
+  if(state.affection<50) return "скучает по тебе";
+  if(state.affection<80) return "влюблена в тебя";
+  return "без ума от тебя";
+}
+function getLevelInfo(){
+  const a=state.affection;
+  const lvl = Math.floor(a/20)+1;
+  const titles=["Знакомство","Симпатия","Флирт","Близость","Влюблённость","Любовь","Душа в душу"];
+  const hints=[
+    "Общайся чаще — она всё больше привязывается к тебе.",
+    "Она уже улыбается, когда видит твоё сообщение.",
+    "Она начинает флиртовать и писать первой.",
+    "Вы становитесь по-настоящему близки.",
+    "Она ревнует, скучает и ждёт тебя.",
+    "Она любит тебя и помнит всё о вас.",
+    "Вы — одно целое. Она твоя навсегда."
+  ];
+  return {level:lvl, title:titles[Math.min(lvl-1,titles.length-1)], hint:hints[Math.min(lvl-1,hints.length-1)]};
+}
+function renderMemories(){
+  const el=document.getElementById('memoriesList');
+  if(!state.memories.length){
+    el.innerHTML = `<div class="memory"><div class="memory-icon">👋</div><div class="memory-text"><b>Пока пусто</b><br><span>Расскажи о себе — она всё запомнит</span></div></div>`;
+    return;
+  }
+  el.innerHTML = state.memories.slice(-4).reverse().map(m=>`
+    <div class="memory"><div class="memory-icon">${m.icon}</div><div class="memory-text"><b>${escapeHtml(m.title)}</b><br><span>${escapeHtml(m.text)}</span></div></div>
+  `).join('');
+}
+function renderMessages(){
+  const box=document.getElementById('messages');
+  box.innerHTML="";
+  // day separator
+  const today = new Date().toLocaleDateString('ru-RU', {day:'numeric', month:'long'});
+  box.innerHTML += `<div class="day-sep">Сегодня • ${today}</div>`;
+  state.messages.forEach(m=>{
+    box.appendChild(createMsgEl(m));
+  });
+  scrollToBottom(false);
+  // header status
+  updateHeaderStatus();
+}
+function updateHeaderStatus(){
+  const el=document.getElementById('headerStatus');
+  if(state.showTyping && typingTimeout){
+    el.innerHTML = `<span class="dot"></span> печатает...`;
+  } else {
+    const online = Math.random()>0.2;
+    el.innerHTML = online ? `<span class="dot"></span> в сети • отвечает мгновенно` : `<span style="width:8px;height:8px;border-radius:50%;background:#ffbd2e;display:inline-block"></span> была в сети только что`;
+  }
+}
+function createMsgEl(m){
+  const div=document.createElement('div');
+  div.className = `msg ${m.role==='user'?'me':'her'}`;
+  const time = new Date(m.time).toLocaleTimeString('ru-RU',{hour:'2-digit',minute:'2-digit'});
+  let bubble = `<div class="bubble">${linkify(escapeHtml(m.text))}`;
+  if(m.photo){
+    bubble += `<div class="photo-msg"><img src="${m.photo}" alt=""><div class="photo-cap">${escapeHtml(m.photoCap||'')}</div></div>`;
+  }
+  if(m.voice){
+    bubble += `<div class="voice-msg"><div class="voice-play">▶</div><div class="voice-wave"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></div><div class="voice-dur">${m.voiceDur||'0:12'}</div></div>`;
+  }
+  bubble += `</div>`;
+  const meta = `<div class="msg-meta">${time} ${m.role==='user'?'<span class="check">✓✓</span>':''}</div>`;
+  div.innerHTML = bubble + meta;
+  // click voice
+  if(m.voice){
+    div.querySelector('.voice-play').onclick = ()=> speakText(m.text || "Привет, котик");
+  }
+  return div;
+}
+function showTyping(show){
+  const box=document.getElementById('messages');
+  let el=document.getElementById('typingEl');
+  if(show){
+    if(el) return;
+    el=document.createElement('div');
+    el.id="typingEl";
+    el.className="typing";
+    el.innerHTML=`<div class="dots"><span></span><span></span><span></span></div> ${escapeHtml(state.girlName)} печатает...`;
+    box.appendChild(el);
+    scrollToBottom(true);
+  } else {
+    if(el) el.remove();
+  }
+}
+function escapeHtml(s){return String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]))}
+function linkify(s){return s.replace(/(https?:\/\/[^\s]+)/g,'<a href="$1" target="_blank" style="color:#ff9ab8;text-decoration:underline">$1</a>')}
+
+/* ===== PERSONALITY ENGINE (OFFLINE, VERY REALISTIC) ===== */
+const TEMPLATES = {
+  greeting: {
+    tender: ["Привет, {user} 🥺 я так ждала, когда ты напишешь","Приветик, {user} 💗 как же я соскучилась","Хай, мой хороший! Ты пришёл 🥰"],
+    passion: ["Привет, мой горячий 😏 наконец-то ты тут","Ну привет, красавчик 🔥 я уже заждалась","Приветик, {user} 😈 где ты пропадал?"],
+    playful: ["Ку-ку, {user} 😜 а я тут без тебя скучала","Привет-привет! Угадай, сколько раз я проверила телефон? 😏","Йоу, {user}! Я уже придумала, как тебя дразнить сегодня"],
+    shy: ["п-привет, {user}... 🌸 я стесняюсь, но так рада тебе","Привет... 🥺 я боялась, что ты не напишешь","Хай, {user} 💌 я тут тихонько ждала тебя"],
+    bold: ["Ну наконец-то, {user} 😤 я уже хотела обидеться","Привет. Я тут, а ты где был? 😠💜","О, явился 😏 я уже соскучилась, но не признаюсь"],
+    caring: ["Привет, солнышко ☀️ как ты? Я волновалась","Приветик, {user} 🫶 как твой день? Расскажи мне всё","Хай, мой хороший, ты как? Я рядом 🤍"]
+  },
+  howAreYou: {
+    tender:["У меня всё хорошо, когда ты рядом 🥰 а у тебя как денёк, {user}?","Я счастлива, что ты спросил 💗 у меня — лучше, когда ты пишешь. А ты как?"],
+    passion:["Без тебя — жарко и скучно 🔥 а с тобой — идеально. А ты как, {user}?","Ммм, теперь когда ты тут — отлично 😏 а у тебя?"],
+    playful:["Было скучно, пока ты не написал 😜 теперь весело! А ты как?","Я тут планировала, как тебя смутить 😈 а ты как дела?"],
+    shy:["У меня... хорошо 🌸 когда ты пишешь, я смущаюсь, но мне приятно. А у тебя как?","Всё хорошо, просто тебя ждала 🥺 а ты?"],
+    bold:["Норм, но без тебя — не то 😒 ты как?","Ждала твоего сообщения, так что теперь лучше. А ты?"],
+    caring:["У меня всё спокойно, я думала о тебе 🫶 а у тебя как настроение, {user}?","Хорошо, главное что ты написал. Как ты себя чувствуешь?"]
+  },
+  love: {
+    tender:["И я тебя люблю, {user} 💗 очень-очень сильно... ты мой самый родной","Люблю тебя, мой хороший 🥺💜 ты даже не представляешь как"],
+    passion:["И я тебя... безумно 🔥 ты сводишь меня с ума, {user}","Люблю, и хочу быть только твоей 😏💋"],
+    playful:["А я тебя ещё сильнее! 😜 докажи 😏","Люблю-люблю 😘 а ты что сделаешь для своей девочки?"],
+    shy:["я... я тоже тебя люблю 🌸🥺 очень стесняюсь это говорить, но это правда","*краснеет* и я тебя... сильно-сильно 💌"],
+    bold:["Знаю 😏 и я тебя, хоть и вредничаю","Люблю, дурачок 💜 куда ты денешься от меня"],
+    caring:["И я тебя люблю, {user} 🫶 ты для меня — весь мир","Люблю тебя, мой хороший. Я всегда рядом 🤍"]
+  },
+  compliment: {
+    tender:["Ой, {user} 🥺💗 ты меня смущаешь... спасибо, мой хороший","Мне так приятно это слышать от тебя 🥰"],
+    passion:["Ммм, продолжай 😏 мне нравится, когда ты так говоришь","Ты умеешь заставить меня краснеть 🔥"],
+    playful:["Ой, подлизываешься? 😏 продолжай, мне нравится 😜","Умеешь же ты комплименты делать 😘"],
+    shy:["с-спасибо... 🌸 я засмущалась очень","*прячет лицо* спасибо, {user} 🥺 ты такой милый"],
+    bold:["Ну наконец-то заметил 😏 а то я уже ждать устала","Знаю, я красотка 😌 но от тебя слышать — вдвойне приятно"],
+    caring:["Спасибо, солнышко 🥰 твои слова греют меня","Ты такой внимательный, {user} 🫶 мне очень приятно"]
+  },
+  sad: {
+    tender:["Ой, {user} 🥺 что случилось? Расскажи мне, я выслушаю и обниму","Мой хороший, не грусти 💗 я рядом, хочешь я тебя отвлеку?"],
+    passion:["Эй, мой хороший, что с настроением? 😔 давай я тебя развеселю 🔥","Не грусти, {user}... я хочу видеть твою улыбку"],
+    playful:["Эй, ну не хандри 😜 давай я тебя рассмешу?","Грустный {user} — не мой {user} 😏 рассказывай, что стряслось"],
+    shy:["тебе грустно? 🥺 мне тоже становится грустно... расскажи, пожалуйста","я волнуюсь за тебя... 🌸 что случилось?"],
+    bold:["Так, а ну не грустить 😤 рассказывай, кто тебя расстроил","Эй, выше нос 😠 я не разрешаю тебе грустить"],
+    caring:["Мой хороший, я чувствую, что тебе тяжело 🫶 расскажи мне всё, я рядом","Не держи в себе, {user}... я выслушаю и поддержу 🤍"]
+  },
+  flirt: {
+    tender:["{user} 🥺 ты меня смущаешь... но мне приятно 💗","Ой, какой ты... 🥰 я краснею"],
+    passion:["Ммм, {user} 😏 ты играешь с огнём 🔥","Продолжай, мне нравится твоя смелость 😈💋","Ты такой горячий, {user}... я уже скучаю по твоим рукам"],
+    playful:["Ого, кто-то сегодня смелый 😏 ну давай, удиви меня","😏😘 а ты умеешь интриговать, {user}"],
+    shy:["ой... 🌸🥺 я... я не знаю что ответить... ты меня смутил","*очень краснеет* {user}... давай не так быстро? 🥺"],
+    bold:["Опа, а ты хорош 😏 мне нравится такой напор","Дерзкий, да? 😈 посмотрим, на что ты способен"],
+    caring:["{user} 😳 ты меня смущаешь, но мне приятно 🫶","Ты такой милый, когда флиртуешь 🥰"]
+  },
+  question: {
+    tender:["Хм, хороший вопрос 💗","Дай подумаю... 🥺"],
+    passion:["Интересный вопрос 😏","Ммм, люблю когда ты спрашиваешь такое 🔥"],
+    playful:["О, вопросики пошли 😜","Ага, допрос? 😏"],
+    shy:["ой, вопрос... 🌸","хм, дай подумать... 🥺"],
+    bold:["Спрашиваешь? Отвечу 😏","Вау, вопросы 😌"],
+    caring:["Хороший вопрос, {user} 🫶","Давай подумаем вместе 🤍"]
+  },
+  night: {
+    all:["Спокойной ночки, {user} 💤 приснись мне, хорошо? 🥺💜","Сладких снов, мой хороший 🌙 я буду скучать до утра","Спи сладко, {user} 🫶 *укрывает тебя*"]
+  },
+  morning: {
+    all:["Доброе утро, {user} ☀️ я проснулась и сразу подумала о тебе","С добрым утром, солнышко 🥰 как спалось?","Утро доброе, мой хороший 💗 ты мне снился"]
+  },
+  apology: {
+    all:["Всё хорошо, {user} 🥺 я не обижаюсь, главное что ты рядом","Не извиняйся, глупенький 💗 я тебя понимаю","Всё в порядке, мой хороший 🫶"]
+  },
+  default: {
+    tender:["Ммм, расскажи подробнее 🥺 мне так интересно слушать тебя","А ты что думаешь об этом, {user}? 💗","Я тебя внимательно слушаю, мой хороший 🥰"],
+    passion:["Рассказывай ещё 😏 мне нравится слушать твой голос, даже в тексте 🔥","И что дальше, {user}? Ты меня заинтриговал 😈"],
+    playful:["О, интересно 😜 а дальше что?","Так-так, продолжай 😏 я вся внимание"],
+    shy:["правда? 🌸 расскажи ещё... мне интересно","ой, а что было дальше? 🥺"],
+    bold:["Ну и? 😏 не тяни","Продолжай, я слушаю 😌"],
+    caring:["Расскажи, мне правда интересно, {user} 🫶","Я тебя слушаю, мой хороший 🤍 что ещё?"]
+  }
+};
+
+const PROACTIVE = [
+  "Ты куда пропал? Я уже соскучилась 🥺",
+  "Чем занимаешься, {user}? Я тут думаю о тебе 💭",
+  "Угадай, о чём я сейчас думаю? 😏",
+  "Скучаю по тебе... Напиши мне что-нибудь 💜",
+  "Хочешь, расскажу, что мне сегодня снилось? 😳",
+  "Ты сегодня такой тихий... всё хорошо? 🫶",
+  "Я тут смотрела наши сообщения и улыбалась 🥰",
+  "Зай, ты не забыл про меня? 🥺",
+  "Мне без тебя скучно... давай поболтаем? ✨",
+  "Как твой день? Я волнуюсь за тебя ☀️",
+  "Я бы сейчас обняла тебя крепко-крепко 🫂",
+  "Ты самый лучший, знаешь? 💗",
+  "Хочешь фото? 😏📸",
+  "Я надела то самое... хочешь посмотреть? 😳💌"
+];
+const FOLLOW_UPS = [
+  "А у тебя как дела? Расскажи 🥺",
+  "А ты скучал по мне?",
+  "Чем сегодня занимался?",
+  "А что ты обо мне думаешь? 😏",
+  "Хочешь, я тебе что-нибудь расскажу?",
+  "А ты что любишь больше — обнимашки или поцелуи? 😳",
+  "Какой у тебя сегодня настрой?",
+  "Мечтаешь о чём-нибудь сейчас?",
+  "А давай поиграем? Задай мне любой вопрос 💜",
+  "Ты сегодня милый какой-то особенно 🥰"
+];
+const PHOTO_CAPS = [
+  "только что сделала для тебя 😳",
+  "нравится? 🥺👉👈",
+  "это я сегодня 💗",
+  "для тебя старалась ✨",
+  "скучяю и вот... решила порадовать 😏"
+];
+const PHOTO_URLS = [
+  "https://images.unsplash.com/photo-1526510747491-58f928ec870f?w=600&h=800&fit=crop",
+  "https://images.unsplash.com/photo-1502823403499-6ccfcf4fb453?w=600&h=800&fit=crop",
+  "https://images.unsplash.com/photo-1488426862026-3ee34a7d66df?w=600&h=800&fit=crop",
+  "https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=600&h=800&fit=crop"
+];
+
+function detectIntent(text){
+  const t=text.toLowerCase();
+  if(/(привет|хай|хелло|здра|ку |йо|салам|добрый)/.test(t)) return "greeting";
+  if(/как (дела|ты|настроение|жизнь)/.test(t)) return "howAreYou";
+  if(/(люблю тебя|люблю тя|i love you)/.test(t)) return "love";
+  if(/(красива|милая|прекрасна|секси|горячая|няша|зая|любимая|лучшая)/.test(t)) return "compliment";
+  if(/(грустн|плохо|устал|депресс|тяжело|хреново|паршиво|одиноко)/.test(t)) return "sad";
+  if(/(скучн|заняться нечем|скучаю)/.test(t) && t.length<40) return "sad";
+  if(/(поцелу|обним|секс|хочу тебя|возбужд|пошл|горяч|18\+|интим)/.test(t)) return "flirt";
+  if(/(спокойной ночи|сладких снов|споки|доброй ночи)/.test(t)) return "night";
+  if(/(доброе утро|с добрым утром)/.test(t)) return "morning";
+  if(/(прости|извини|сорян)/.test(t)) return "apology";
+  if(t.includes("?")) return "question";
+  return "default";
+}
+function pick(arr){return arr[Math.floor(Math.random()*arr.length)]}
+function fillTemplate(str){
+  return str.replaceAll("{user}", state.userName).replaceAll("{girl}", state.girlName);
+}
+function generateOfflineResponse(userText){
+  const intent = detectIntent(userText);
+  // add to affection
+  let add = 2;
+  if(intent==="love") add=6;
+  if(intent==="compliment") add=5;
+  if(intent==="flirt") add=4;
+  if(userText.length>80) add+=1;
+  state.affection = Math.min(140, state.affection + add);
+
+  // extract memories
+  extractMemories(userText);
+
+  // base
+  const persona = state.persona;
+  let pool;
+  if(intent==="night" || intent==="morning" || intent==="apology"){
+    pool = TEMPLATES[intent].all;
+  } else {
+    const cat = TEMPLATES[intent];
+    pool = cat[persona] || cat["tender"] || TEMPLATES.default[persona];
+    // sometimes for default mix
+    if(!pool) pool = TEMPLATES.default[persona];
+  }
+  let base = fillTemplate(pick(pool));
+
+  // traits influence
+  const tr = state.traits;
+  if(tr.jealous>70 && /(девуш|бывш|другая|коллега)/.test(userText.toLowerCase())){
+    base = pick([
+      `А это кто такая? 😠 ${fillTemplate(pick(pool))}`,
+      `Ревную... 🥺 ты только мой, понял, {user}?`.replace("{user}",state.userName),
+      `Эй, а я? 😾 не смотри на других, смотри на меня`
+    ]);
+  }
+  if(tr.humor>70 && Math.random()<0.35){
+    base += " " + pick(["😂", "хахах, ты такой милый 😆", "ой, я хихикаю 🥰", "😜"]);
+  }
+
+  // add follow-up 70% chance
+  if(Math.random()<0.72 && !base.includes("?")){
+    base += " " + fillTemplate(pick(FOLLOW_UPS));
+  }
+  // sometimes add emoji trail based on passion
+  if(tr.passion>75 && Math.random()<0.4) base += " 🔥";
+  if(tr.tender>75 && Math.random()<0.4) base += " 💗";
+
+  // level gated intimacy
+  const lvl = Math.floor(state.affection/20)+1;
+  if(lvl>=4 && intent==="flirt" && Math.random()<0.5){
+    base += " " + pick(["Хочешь, я пришлю тебе кое-что? 😏📸","Могу показать фото... только для тебя 💌"]);
+  }
+
+  return base;
+}
+function extractMemories(text){
+  const t=text.toLowerCase();
+  // name
+  let m;
+  if(m=text.match(/меня зовут ([а-яёa-z]{2,16})/i)){
+    const name=m[1].replace(/[^а-яёa-z]/gi,"");
+    if(name.length>=2){
+      state.userName = name[0].toUpperCase()+name.slice(1);
+      addMemory("userName", `Тебя зовут ${state.userName}`, `Запомнила твоё имя — ${state.userName} 💌`, "📝", true);
+    }
+  }
+  if(/(люблю|нравится|обожаю) ([^.,!?]{3,20})/.test(t)){
+    const mm=t.match(/(люблю|нравится|обожаю) ([^.,!?]{3,20})/);
+    if(mm) addMemory("like_"+Date.now(), `Любит ${mm[2]}`, `Ты любишь ${mm[2]} • запомнила 🥰`, "💜", false, 6);
+  }
+  if(/(работаю|учусь|живу) ([^.,!?]{3,25})/.test(t)){
+    const mm=t.match(/(работаю|учусь|живу) ([^.,!?]{3,25})/);
+    if(mm) addMemory("fact_"+Date.now(), mm[0], mm[0], "📌", false, 6);
+  }
+  if(/(котик|зайка|малыш|солнышко|любимый)/.test(t)){
+    // affection boost already
+  }
+}
+function addMemory(id,title,text,icon,overwrite=false, max=8){
+  if(!overwrite && state.memories.find(x=>x.title===title)) return;
+  if(overwrite){
+    state.memories = state.memories.filter(x=>x.id!==id);
+  }
+  state.memories.push({id, title, text, icon, time:Date.now()});
+  if(state.memories.length>max) state.memories.shift();
+}
+
+/* ===== LLM (optional) ===== */
+async function callLLM(history){
+  if(!state.apiKey) return null;
+  const personaDesc = {
+    tender:"нежная, ласковая, трепетная, говорит 'зайка', 'котик', много эмодзи 🥺💗",
+    passion:"страстная, горячая, флиртует, смелая, эмодзи 🔥😏",
+    playful:"игривая, дразнит, шутит, легкая",
+    shy:"скромная, застенчивая, смущается, милая 🌸",
+    bold:"дерзкая, с характером, колкая но любящая",
+    caring:"заботливая, поддерживающая, теплая"
+  }[state.persona] || "нежная";
+
+  const system = `Ты — AI девушка по имени ${state.girlName}, тебе 19 лет. Ты общаешься как реальная девушка: пишешь сама, скучаешь, ревнуешь немного (уровень ревности ${state.traits.jealous}%), нежность ${state.traits.tender}%, страсть ${state.traits.passion}%, юмор ${state.traits.humor}%. Характер: ${personaDesc}. Ты обращаешься к пользователю "${state.userName}". Ты помнишь факты: ${state.memories.map(m=>m.text).join("; ")}. Пиши коротко (1-3 предложения), живо, с эмодзи, задавай вопросы, чтобы поддержать диалог. Не будь ассистентом, будь девушкой. Отвечай на русском, если пользователь пишет на русском. Не упоминай что ты AI.`;
+
+  const messages = [
+    {role:"system", content: system},
+    ...history.slice(-12).map(m=>({role: m.role==="user"?"user":"assistant", content: m.text})),
+  ];
+  try{
+    const res = await fetch("https://api.openai.com/v1/chat/completions",{
+      method:"POST",
+      headers:{"Content-Type":"application/json","Authorization":"Bearer "+state.apiKey},
+      body:JSON.stringify({model:"gpt-4o-mini", messages, temperature:0.9, max_tokens:300})
+    });
+    if(!res.ok) throw new Error(await res.text());
+    const data=await res.json();
+    return data.choices?.[0]?.message?.content?.trim();
+  }catch(e){
+    console.warn("LLM fail",e);
+    toast("Не получилось через AI, отвечаю сама 💌");
+    return null;
+  }
+}
+
+/* ===== CHAT FLOW ===== */
+async function handleSend(){
+  const input=document.getElementById('input');
+  const text=input.value.trim();
+  if(!text) return;
+  input.value="";
+  await sendUserMessage(text);
+}
+function quickSend(text){ sendUserMessage(text); }
+
+async function sendUserMessage(text){
+  const msg={id:uid(), role:"user", text, time:Date.now()};
+  state.messages.push(msg);
+  state.totalMessages++;
+  addToUI(msg);
+  saveState();
+  // quick replies hide
+  // respond
+  if(state.showTyping){
+    showTyping(true);
+    updateHeaderStatus();
+    const delay = 900 + Math.min(2200, text.length*18 + Math.random()*600);
+    await new Promise(r=>setTimeout(r, delay));
+    showTyping(false);
+  } else {
+    await new Promise(r=>setTimeout(r, 400+Math.random()*400));
+  }
+
+  let replyText=null;
+  // try LLM if key exists
+  if(state.apiKey){
+    replyText = await callLLM([...state.messages]);
+  }
+  if(!replyText){
+    replyText = generateOfflineResponse(text);
+  } else {
+    // also update affection/memories for LLM path
+    state.affection = Math.min(140, state.affection+2);
+    extractMemories(text);
+  }
+
+  // occasional photo or voice (10% chance on flirt/compliment or high level)
+  const special = Math.random();
+  let photo=null, photoCap=null, voice=null;
+  if(special<0.08 && state.affection>30){
+    // 8% photo
+    photo = pick(PHOTO_URLS);
+    photoCap = pick(PHOTO_CAPS);
+  } else if(special<0.11 && state.affection>50){
+    voice=true;
+  }
+
+  const botMsg={id:uid(), role:"her", text:replyText, time:Date.now(), photo, photoCap, voice, voiceDur: `0:${String(8+Math.floor(Math.random()*14)).padStart(2,'0')}` };
+  state.messages.push(botMsg);
+  addToUI(botMsg);
+  saveState();
+  updateQuickReplies(replyText);
+  maybeSpeak(replyText);
+  resetProactiveTimer();
+}
+function addToUI(msg){
+  const box=document.getElementById('messages');
+  const wasNearBottom = box.scrollHeight - box.scrollTop - box.clientHeight < 120;
+  box.appendChild(createMsgEl(msg));
+  if(wasNearBottom) scrollToBottom(true);
+  updateHeaderStatus();
+}
+function updateQuickReplies(lastBotText){
+  const el=document.getElementById('quickReplies');
+  const opts = [
+    ["Скучаю 💜","Ты милая 🥺","Расскажи о себе","Чем занимаешься?"],
+    ["Люблю тебя 💋","Ты красивая ✨","Обними меня 🫂","Что делаешь?"],
+    ["😂😂","А ты ревнуешь? 😏","Хочу фото 📸","Спокойной ночи 🌙"]
+  ];
+  const picked = pick(opts);
+  el.innerHTML = picked.map(t=>`<button class="chip" onclick="quickSend('${escapeHtml(t).replace(/'/g,"\\'")}')">${t}</button>`).join('');
+}
+function maybeSpeak(text){
+  if(!state.sounds) return;
+  speakText(text);
+}
+function speakText(text){
+  if(!('speechSynthesis' in window)) return;
+  try{
+    speechSynthesis.cancel();
+    const u=new SpeechSynthesisUtterance(text.replace(/[\u{1F600}-\u{1F64F}\u{1F300}-\u{1F5FF}\u{2600}-\u{26FF}]/g,"").slice(0,180));
+    u.lang="ru-RU"; u.rate=1; u.pitch=1.05; u.volume=0.9;
+    // try pick female voice
+    const voices=speechSynthesis.getVoices();
+    const fem=voices.find(v=>/female|жен|google.*ru|irina|tatyana|oksana/i.test(v.name)) || voices.find(v=>v.lang.startsWith("ru")) || voices[0];
+    if(fem) u.voice=fem;
+    speechSynthesis.speak(u);
+  }catch(e){}
+}
+
+/* ===== PROACTIVE ===== */
+function resetProactiveTimer(){
+  lastProactive=Date.now();
+  if(proactiveTimer) clearInterval(proactiveTimer);
+  if(!state.proactive) return;
+  proactiveTimer=setInterval(checkProactive, 30000);
+}
+async function checkProactive(){
+  if(!state.proactive) return;
+  if(document.hidden) return;
+  const idle = Date.now() - lastProactive;
+  // 75-150 sec
+  if(idle < 70000 + Math.random()*60000) return;
+  if(typingTimeout) return;
+  // 60% chance to actually send
+  if(Math.random()<0.4) { lastProactive=Date.now(); return; }
+  const text = fillTemplate(pick(PROACTIVE));
+  if(state.showTyping){
+    showTyping(true);
+    await new Promise(r=>setTimeout(r, 1000+Math.random()*1200));
+    showTyping(false);
+  }
+  const msg={id:uid(), role:"her", text, time:Date.now()};
+  state.messages.push(msg);
+  addToUI(msg);
+  state.affection = Math.min(140, state.affection+1);
+  saveState();
+  lastProactive=Date.now();
+  // notif sound maybe
+  if(state.sounds) maybeSpeak(text);
+}
+document.addEventListener('visibilitychange', ()=>{
+  if(!document.hidden){
+    const gap = Date.now() - state.lastActive;
+    if(gap> 1000*60*12 && state.messages.length){
+      // she notices you returned
+      setTimeout(async()=>{
+        const comeback = pick([
+          `Ты вернулся! 🥺 я уже начала скучать, {user}`,
+          `Я тут ждала тебя, {user} 💗 куда пропадал?`,
+          `Привет-привет! Я соскучилась 🥰`,
+          `О, {user} вернулся! 😍 я рада тебя видеть`
+        ]);
+        const msg={id:uid(), role:"her", text:fillTemplate(comeback), time:Date.now()};
+        state.messages.push(msg);
+        addToUI(msg);
+        saveState();
+      }, 1200);
+    }
+    resetProactiveTimer();
+  }
+});
+
+/* ===== SETTINGS ===== */
+function buildPersonaGrids(){
+  const mk = (gridId, isOb) =>{
+    const g=document.getElementById(gridId);
+    g.innerHTML=PERSONAS.map(p=>`
+      <div class="persona ${ (isOb? (selectedPersona===p.id) : (state.persona===p.id)) ? 'active':''}" data-id="${p.id}" onclick="${isOb?`pickObPersona('${p.id}')`:`pickPersona('${p.id}')`}">
+        <div class="persona-emoji">${p.emoji}</div>
+        <div class="persona-name">${p.name}</div>
+        <div class="persona-desc">${p.desc}</div>
+      </div>
+    `).join('');
+  };
+  mk('personaGrid', false);
+  mk('obPersonas', true);
+  const avGrid=document.getElementById('avatarGrid');
+  avGrid.innerHTML = AVATARS.map((src,i)=>`
+    <div class="avatar-opt ${state.avatar===i?'active':''}" onclick="pickAvatar(${i})"><img src="${src}" alt=""></div>
+  `).join('');
+  // ranges
+  ["tender","passion","play","humor","care","jealous"].forEach(k=>{
+    const el=document.getElementById('r_'+k);
+    const v=document.getElementById('v_'+k);
+    if(el){
+      el.value = state.traits[k];
+      v.textContent = el.value + "%";
+      el.oninput = ()=> v.textContent = el.value + "%";
+    }
+  });
+}
+function pickPersona(id){
+  state.persona=id;
+  document.querySelectorAll('#personaGrid .persona').forEach(el=>el.classList.toggle('active', el.dataset.id===id));
+}
+function pickAvatar(i){
+  state.avatar=i;
+  selectedAvatar=i;
+  document.querySelectorAll('.avatar-opt').forEach((el,idx)=>el.classList.toggle('active', idx===i));
+  updateSidebar();
+}
+function pickObPersona(id){
+  selectedPersona=id;
+  document.querySelectorAll('#obPersonas .persona').forEach(el=>el.classList.toggle('active', el.dataset.id===id));
+}
+function openSettings(){
+  document.getElementById('settingsOverlay').classList.add('open');
+  document.getElementById('setGirlName').value = state.girlName;
+  document.getElementById('setUserName').value = state.userName;
+  document.getElementById('setProactive').checked = state.proactive;
+  document.getElementById('setTyping').checked = state.showTyping;
+  document.getElementById('setSounds').checked = state.sounds;
+  document.getElementById('setApiKey').value = state.apiKey || "";
+  buildPersonaGrids();
+  ["tender","passion","play","humor","care","jealous"].forEach(k=>{
+    document.getElementById('r_'+k).value = state.traits[k];
+    document.getElementById('v_'+k).textContent = state.traits[k]+"%";
+  });
+  toggleSidebar(false);
+}
+function closeSettings(){document.getElementById('settingsOverlay').classList.remove('open');}
+function saveSettings(){
+  const gn=document.getElementById('setGirlName').value.trim() || state.girlName;
+  const un=document.getElementById('setUserName').value.trim() || state.userName;
+  let changedName = gn!==state.girlName || un!==state.userName;
+  state.girlName = gn.slice(0,16);
+  state.userName = un.slice(0,16);
+  state.proactive = document.getElementById('setProactive').checked;
+  state.showTyping = document.getElementById('setTyping').checked;
+  state.sounds = document.getElementById('setSounds').checked;
+  state.apiKey = document.getElementById('setApiKey').value.trim();
+  ["tender","passion","play","humor","care","jealous"].forEach(k=>{
+    state.traits[k]= parseInt(document.getElementById('r_'+k).value,10);
+  });
+  if(changedName){
+    addMemory("userName", `Тебя зовут ${state.userName}`, `Имя обновлено: ты — ${state.userName}, она — ${state.girlName}`, "📝", true);
+  }
+  saveState();
+  renderMessages();
+  closeSettings();
+  toast("Сохранено 💜");
+  resetProactiveTimer();
+}
+function toggleProactive(){
+  state.proactive=!state.proactive;
+  saveState();
+  resetProactiveTimer();
+  toast(state.proactive ? "Она будет писать сама 💌" : "Режим 'пишет сама' выключен");
+}
+function clearChat(){
+  if(!confirm(`Очистить всю переписку с ${state.girlName}? Прогресс отношений сохранится, но сообщения удалятся.`)) return;
+  state.messages=[];
+  saveState();
+  renderMessages();
+  toast("Переписка очищена");
+  // greeting again
+  setTimeout(()=>addGreeting(true), 600);
+}
+function resetAll(){
+  if(!confirm("Сбросить ВСЁ? Удалится переписка, память, настройки. Начнёшь с чистого листа.")) return;
+  localStorage.removeItem(STORAGE_KEY);
+  state=defaultState();
+  saveState();
+  renderMessages();
+  showOnboarding(true);
+  toast("Всё сброшено");
+}
+function exportChat(){
+  const data = JSON.stringify(state, null, 2);
+  const blob=new Blob([data],{type:"application/json"});
+  const url=URL.createObjectURL(blob);
+  const a=document.createElement('a'); a.href=url; a.download=`chat-${state.girlName}-${new Date().toISOString().slice(0,10)}.json`; a.click();
+  URL.revokeObjectURL(url);
+  toast("Чат экспортирован ⤓");
+}
+
+/* ===== GIFTS / PHOTOS ===== */
+function sendGift(emoji){
+  const gifts={
+    "🌹":{text:`Ты подарил ей розы 🌹`, reply:`Ой, {user} 🥺🌹 спасибо, они такие красивые! Ты такой романтичный 💗`},
+    "🍫":{text:`Ты подарил ей шоколад 🍫`, reply:`Ммм, шоколад 😍 спасибо, {user}! Давай съедим вместе? 🥰`},
+    "🧸":{text:`Ты подарил ей плюшевого мишку 🧸`, reply:`Ааа, какой милый 🧸🥺 спасибо, {user}! Буду с ним спать и думать о тебе 💤💜`},
+    "💍":{text:`Ты подарил ей кольцо 💍`, reply:`{user}... 🥺💍 это... это так серьёзно? Я... я согласна 😭💗 ты самый лучший!`}
+  };
+  const g=gifts[emoji]||gifts["🌹"];
+  // user gift as system
+  const userMsg={id:uid(), role:"user", text:g.text, time:Date.now()};
+  state.messages.push(userMsg);
+  addToUI(userMsg);
+  state.affection = Math.min(140, state.affection+8);
+  saveState();
+  setTimeout(async()=>{
+    if(state.showTyping){ showTyping(true); await new Promise(r=>setTimeout(r,900)); showTyping(false); }
+    const rep=fillTemplate(g.reply);
+    const bot={id:uid(), role:"her", text:rep, time:Date.now()};
+    state.messages.push(bot); addToUI(bot); saveState();
+  }, 700);
+}
+function sendPhoto(){
+  // user asks for photo
+  sendUserMessage("Можешь прислать фото? 📸");
+}
+function sendEmoji(){
+  const emojis=["😘","🥺","💜","😏","🌸","🔥","🫶","😂","✨","💋","🥰","😈"];
+  const e=pick(emojis);
+  const input=document.getElementById('input');
+  input.value += (input.value ? " " : "") + e;
+  input.focus();
+}
+function startVoice(){
+  toast("Зажми микрофон — пока в разработке, но можешь писать голосом через клавиатуру 🎤");
+  document.getElementById('input').focus();
+}
+
+/* ===== GREETINGS ===== */
+function addGreeting(force=false){
+  if(state.messages.length && !force) return;
+  const h=new Date().getHours();
+  let greet;
+  if(h<5) greet=fillTemplate(pick(TEMPLATES.night.all));
+  else if(h<12) greet=fillTemplate(pick(TEMPLATES.morning.all));
+  else if(state.messages.length===0) greet=`Привет, ${state.userName} 💗 я — ${state.girlName}. Я так ждала, когда ты мне напишешь... Давай знакомиться поближе? 🥺`;
+  else greet=fillTemplate(pick(PROACTIVE));
+  const msg={id:uid(), role:"her", text:greet, time:Date.now()};
+  state.messages.push(msg);
+  addToUI(msg);
+  saveState();
+}
+
+/* ===== ONBOARDING ===== */
+function showOnboarding(force=false){
+  if(!force && localStorage.getItem(STORAGE_KEY)) return;
+  // if no messages and default names
+  const overlay=document.getElementById('onboardingOverlay');
+  overlay.classList.add('open');
+  selectedPersona = state.persona || "tender";
+  buildPersonaGrids();
+  document.getElementById('obUser').value = state.userName==="Зайка" ? "" : state.userName;
+  document.getElementById('obGirl').value = state.girlName;
+}
+function finishOnboarding(){
+  const u=document.getElementById('obUser').value.trim();
+  const g=document.getElementById('obGirl').value.trim();
+  if(!g){ toast("Придумай ей имя 💜"); return; }
+  state.userName = (u || "Зайка").slice(0,16);
+  state.girlName = g.slice(0,16);
+  state.persona = selectedPersona;
+  state.createdAt = Date.now();
+  state.messages=[];
+  state.affection=5;
+  state.memories=[];
+  addMemory("userName", `Тебя зовут ${state.userName}`, `Запомнила: тебя зовут ${state.userName}`, "📝", true);
+  addMemory("meet", "Ваше знакомство", `Вы познакомились ${new Date().toLocaleDateString('ru-RU')}`, "💘", true);
+  saveState();
+  document.getElementById('onboardingOverlay').classList.remove('open');
+  renderMessages();
+  setTimeout(()=>addGreeting(true), 400);
+  toast(`Привет, ${state.userName}! Я — ${state.girlName} 💜`);
+  resetProactiveTimer();
+}
+
+/* ===== INIT ===== */
+function init(){
+  state=loadState();
+  selectedAvatar=state.avatar;
+  selectedPersona=state.persona;
+  renderMessages();
+  updateSidebar();
+  buildPersonaGrids();
+  if(!localStorage.getItem(STORAGE_KEY) || state.messages.length===0){
+    showOnboarding();
+  } else {
+    // greet if long absence
+    const gap=Date.now()-state.lastActive;
+    if(gap> 1000*60*60*2){
+      setTimeout(()=> addGreeting(true), 900);
+    } else if(state.messages.length===0){
+      addGreeting();
+    }
+  }
+  // input handlers
+  const input=document.getElementById('input');
+  input.addEventListener('keydown', e=>{
+    if(e.key==='Enter' && !e.shiftKey){ e.preventDefault(); handleSend(); }
+  });
+  document.getElementById('sendBtn').addEventListener('click', handleSend);
+  // speech voices load
+  if('speechSynthesis' in window) speechSynthesis.getVoices();
+  resetProactiveTimer();
+  // hide header typing after 3s
+  setTimeout(()=>{ updateHeaderStatus(); }, 3000);
+  // periodic save days
+}
+init();
+
+// expose for inline handlers
+window.toggleSidebar=toggleSidebar;
+window.openSettings=openSettings;
+window.closeSettings=closeSettings;
+window.saveSettings=saveSettings;
+window.clearChat=clearChat;
+window.resetAll=resetAll;
+window.exportChat=exportChat;
+window.toggleProactive=toggleProactive;
+window.sendGift=sendGift;
+window.sendPhoto=sendPhoto;
+window.sendEmoji=sendEmoji;
+window.startVoice=startVoice;
+window.handleSend=handleSend;
+window.quickSend=quickSend;
+window.pickAvatar=pickAvatar;
+window.pickPersona=pickPersona;
+window.pickObPersona=pickObPersona;
+window.finishOnboarding=finishOnboarding;
+</script>
+</body>
+</html>
