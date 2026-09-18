@@ -71,12 +71,14 @@ body{
 
 /* APP */
 .app{
-  display:grid;grid-template-columns:400px 1fr;
+  display:grid;grid-template-columns:380px 1fr;
   height:100vh;height:100dvh;
-  max-width:1520px;margin:0 auto;
-  background:rgba(10,10,18,0.35);
+  max-width:1640px;margin:0 auto;
+  background:rgba(10,10,18,0.32);
   backdrop-filter:blur(0px);
 }
+.app.sidebar-hidden{grid-template-columns:0px 1fr}
+.app.sidebar-hidden .sidebar{transform:translateX(-100%);opacity:0;pointer-events:none}
 @media(max-width:980px){
   .app{grid-template-columns:1fr}
   .sidebar{position:fixed;inset:0;z-index:60;transform:translateX(-100%);transition:transform 0.38s cubic-bezier(.4,0,.2,1);overflow-y:auto;background:var(--bg);max-width:420px;box-shadow:var(--shadow)}
@@ -166,7 +168,9 @@ body{
 .premium-card p{font-size:11.5px;color:var(--muted);line-height:1.35;margin-top:2px}
 
 /* CHAT */
-.chat{display:flex;flex-direction:column;background:rgba(12,12,22,0.38);backdrop-filter:blur(10px);position:relative;height:100vh;height:100dvh;overflow:hidden}
+.chat{display:flex;flex-direction:column;background:rgba(12,12,22,0.42);backdrop-filter:blur(10px);position:relative;height:100vh;height:100dvh;overflow:hidden}
+.chat-head-inner{max-width:780px;margin:0 auto;width:100%;display:flex;align-items:center;justify-content:space-between;padding:0 18px;height:68px}
+@media(max-width:640px){.chat-head-inner{padding:0 12px}}
 .chat-head{
   height:68px;min-height:68px;
   display:flex;align-items:center;justify-content:space-between;
@@ -179,9 +183,10 @@ body{
 .ch-left{display:flex;align-items:center;gap:12px;min-width:0}
 .burger{display:none;width:40px;height:40px;border-radius:12px;background:rgba(255,255,255,0.06);border:1px solid var(--border);color:white;place-items:center;font-size:18px;cursor:pointer}
 @media(max-width:980px){.burger{display:grid}}
+@media(min-width:981px){#desktopToggle{display:grid !important} .burger{display:none}}
 .h-avatar{width:42px;height:42px;border-radius:13px;object-fit:cover;border:2px solid rgba(255,255,255,0.10);flex-shrink:0;background:linear-gradient(135deg,#ff2e7a,#8b5cf6)}
 .h-info{min-width:0}
-.h-info h2{font-size:14.5px;font-weight:800;display:flex;align-items:center;gap:7px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.h-info h2{font-size:15px;font-weight:800;display:flex;align-items:center;gap:7px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .h-info h2 span{font-size:10px;font-weight:800;letter-spacing:0.04em;background:rgba(16,185,129,0.14);color:#34d399;padding:3px 8px;border-radius:20px;border:1px solid rgba(16,185,129,0.22);white-space:nowrap}
 .h-info p{font-size:11.5px;color:var(--muted);font-weight:600;display:flex;align-items:center;gap:6px;margin-top:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .h-info p.typing{color:var(--accent3)}
@@ -200,14 +205,19 @@ body{
 
 .messages{
   flex:1;overflow-y:auto;overflow-x:hidden;
-  padding:18px 16px 10px;
-  display:flex;flex-direction:column;gap:12px;
+  padding:22px 18px 10px;
+  display:flex;flex-direction:column;gap:14px;
   scroll-behavior:smooth;
   -webkit-overflow-scrolling:touch;
+  align-items:center;
 }
-@media(max-width:640px){.messages{padding:14px 12px 10px}}
+.messages > *{width:100%;max-width:780px}
+.messages .day-sep{width:auto}
+@media(max-width:640px){.messages{padding:16px 12px 10px;align-items:stretch}.messages > *{max-width:none}}
 .day-sep{align-self:center;font-size:10.5px;font-weight:800;letter-spacing:0.07em;text-transform:uppercase;color:var(--muted);background:rgba(255,255,255,0.06);border:1px solid var(--border);padding:6px 12px;border-radius:20px;margin:6px 0 2px;backdrop-filter:blur(8px)}
-.msg{max-width:min(78%,560px);display:flex;flex-direction:column;gap:5px;animation:msgIn 0.34s cubic-bezier(.34,.14,.2,1);position:relative}
+.msg{max-width:min(76%,640px);display:flex;flex-direction:column;gap:6px;animation:msgIn 0.34s cubic-bezier(.34,.14,.2,1);position:relative}
+@media(max-width:820px){.msg{max-width:78%}}
+@media(max-width:640px){.msg{max-width:84%}}
 @keyframes msgIn{from{opacity:0;transform:translateY(8px) scale(0.98)}to{opacity:1;transform:translateY(0) scale(1)}}
 .msg.her{align-self:flex-start}
 .msg.me{align-self:flex-end}
@@ -217,8 +227,8 @@ body{
 .mini-avatar{width:28px;height:28px;border-radius:50%;object-fit:cover;border:1px solid rgba(255,255,255,0.12);flex-shrink:0;background:linear-gradient(135deg,#ff2e7a,#8b5cf6)}
 .mini-avatar.hidden{visibility:hidden}
 .bubble{
-  padding:13px 15px;border-radius:18px;
-  font-size:14.2px;line-height:1.55;
+  padding:15px 17px;border-radius:18px;
+  font-size:15px;line-height:1.6;
   position:relative;word-wrap:break-word;white-space:pre-wrap;
   max-width:100%;
 }
@@ -272,7 +282,7 @@ body{
 @keyframes giftFloat{0%{transform:translateY(10px) scale(0.5);opacity:1}100%{transform:translateY(-60px) scale(1.15) rotate(12deg);opacity:0}}
 
 .quick{
-  display:flex;gap:7px;padding:8px 16px 6px;overflow-x:auto;scrollbar-width:none;flex-wrap:nowrap;align-items:center;
+  display:flex;gap:7px;padding:10px 18px 8px;max-width:780px;margin:0 auto;width:100%;overflow-x:auto;scrollbar-width:none;flex-wrap:nowrap;align-items:center;
   border-top:1px solid transparent;
 }
 .quick::-webkit-scrollbar{display:none}
@@ -287,12 +297,17 @@ body{
 
 /* COMPOSER - FIXED ENTER */
 .composer{
-  padding:10px 12px 10px;
+  padding:12px 18px 12px;
   background:rgba(18,18,28,0.92);
   backdrop-filter:blur(20px) saturate(1.2);
   border-top:1px solid var(--border);
   display:flex;align-items:flex-end;gap:9px;
+  justify-content:center;
+  gap:10px;
 }
+.composer-main{flex:1;max-width:720px}
+.composer .circle-btn.send{width:46px;height:46px}
+@media(max-width:640px){.composer{padding:10px 12px}}
 .composer-main{
   flex:1;
   display:flex;align-items:flex-end;gap:8px;
@@ -308,7 +323,7 @@ body{
 @keyframes shake{0%,100%{transform:translateX(0)}25%{transform:translateX(-4px)}75%{transform:translateX(4px)}}
 #msgInput{
   flex:1;background:transparent;border:none;outline:none;
-  color:white;font-family:inherit;font-size:14.5px;
+  color:white;font-family:inherit;font-size:15px;
   padding:9px 0;min-width:0;max-height:120px;min-height:22px;
   resize:none;line-height:1.45;
   field-sizing:content;
@@ -535,7 +550,7 @@ input[type="range"]::-webkit-slider-thumb{appearance:none;width:18px;height:18px
         <div class="ico">💎</div>
         <div>
           <b>Премиум-вайб без подписки</b>
-          <p>Всё бесплатно, всё локально. Хочешь подключить GPT-4o — вставь ключ в настройках.</p>
+          <p>Всё бесплатно, всё локально. Выбери нейросеть выше — Бесплатный ИИ работает без ключа, как Gemini/ChatGPT.</p>
         </div>
       </div>
 
@@ -547,11 +562,13 @@ input[type="range"]::-webkit-slider-thumb{appearance:none;width:18px;height:18px
 
   <main class="chat">
     <div class="chat-head">
+      <div class="chat-head-inner">
       <div class="ch-left">
         <button class="burger" onclick="toggleSidebar(true)">☰</button>
+        <button class="burger" id="desktopToggle" onclick="toggleDesktopSidebar()" title="Скрыть панель" style="display:none">◀</button>
         <img id="headerAvatar" class="h-avatar" src="avatar.jpg" alt="" onerror="this.src='https://images.unsplash.com/photo-1524504388940-b1c1722653e1?w=300&h=300&fit=crop&crop=face'">
         <div class="h-info">
-          <h2 id="headerName">Алиса <span>в сети</span></h2>
+          <h2 id="headerName">Алиса <span>в сети</span> <small id="neuralBadge" style="font-size:9px;font-weight:800;letter-spacing:0.05em;background:rgba(139,92,246,0.16);color:#b9a6ff;padding:2px 7px;border-radius:20px;border:1px solid rgba(139,92,246,0.22);display:none">🧠 Нейросеть</small></h2>
           <p id="headerStatus"><span class="dot"></span> <span id="statusText">в сети • отвечает мгновенно</span></p>
         </div>
       </div>
@@ -562,6 +579,7 @@ input[type="range"]::-webkit-slider-thumb{appearance:none;width:18px;height:18px
         <button class="icon-btn" onclick="requestPhoto()" title="Попросить фото">🖼️</button>
         <button class="icon-btn primary" onclick="openCall()" title="Позвонить">📞</button>
       </div>
+      </div>
     </div>
 
     <div class="messages" id="messages"></div>
@@ -569,6 +587,7 @@ input[type="range"]::-webkit-slider-thumb{appearance:none;width:18px;height:18px
     <div class="quick" id="quickReplies"></div>
 
     <form class="composer" id="composer" onsubmit="return false">
+      <div style="display:flex;align-items:flex-end;gap:9px;width:100%;max-width:780px;margin:0 auto;">
       <div class="composer-main" id="composerMain">
         <textarea id="msgInput" rows="1" placeholder="Напиши ей что-нибудь..." maxlength="800" autocomplete="off"></textarea>
         <div class="comp-actions">
@@ -577,6 +596,7 @@ input[type="range"]::-webkit-slider-thumb{appearance:none;width:18px;height:18px
         </div>
       </div>
       <button type="submit" class="circle-btn send" id="sendBtn" aria-label="Отправить">➤</button>
+      </div>
       <div class="emoji-panel" id="emojiPanel"></div>
     </form>
     <div class="hint">Нажми <kbd>Enter</kbd> чтобы отправить • <kbd>Shift</kbd> + <kbd>Enter</kbd> новая строка • <b>Она помнит всё, что ты пишешь</b></div>
@@ -619,7 +639,21 @@ input[type="range"]::-webkit-slider-thumb{appearance:none;width:18px;height:18px
           <label style="display:flex;align-items:center;gap:10px;font-weight:600;font-size:12.5px;cursor:pointer;text-transform:none;letter-spacing:0"><input type="checkbox" id="setHearts" checked> Летающие сердечки</label>
         </div>
       </div>
-      <div class="field"><label>AI ключ (опционально)</label><input id="setApiKey" placeholder="sk-... — оставь пустым = встроенный живой движок"><span style="font-size:11px;color:var(--muted2)">С ключом — отвечает GPT-4o-mini. Без ключа — наш оффлайн движок (тоже очень живой, 120+ шаблонов).</span></div>
+      <div class="field"><label>🧠 Нейросеть — кто отвечает</label>
+        <div style="display:grid;gap:8px">
+          <label style="display:flex;gap:10px;align-items:center;padding:12px;border-radius:12px;background:rgba(255,255,255,0.04);border:1px solid var(--border);cursor:pointer"><input type="radio" name="aiProvider" value="pollinations" id="prov_poll"> <span style="font-size:13px;font-weight:700">🤖 Бесплатный ИИ (рекомендую) — без ключа, как ChatGPT</span></label>
+          <label style="display:flex;gap:10px;align-items:center;padding:12px;border-radius:12px;background:rgba(255,255,255,0.04);border:1px solid var(--border);cursor:pointer"><input type="radio" name="aiProvider" value="gemini" id="prov_gemini"> <span style="font-size:13px;font-weight:700">✨ Gemini (Google) — нужен ключ</span></label>
+          <label style="display:flex;gap:10px;align-items:center;padding:12px;border-radius:12px;background:rgba(255,255,255,0.04);border:1px solid var(--border);cursor:pointer"><input type="radio" name="aiProvider" value="openai" id="prov_openai"> <span style="font-size:13px;font-weight:700">💬 ChatGPT (OpenAI) — нужен ключ</span></label>
+          <label style="display:flex;gap:10px;align-items:center;padding:12px;border-radius:12px;background:rgba(255,255,255,0.04);border:1px solid var(--border);cursor:pointer"><input type="radio" name="aiProvider" value="offline" id="prov_offline"> <span style="font-size:13px;font-weight:700">💜 Встроенный (оффлайн, 120+ шаблонов)</span></label>
+        </div>
+        <div id="keyFields" style="display:grid;gap:8px;margin-top:4px">
+          <input id="setGeminiKey" placeholder="Gemini API ключ (AIza... ) — https://aistudio.google.com/app/apikey" style="display:none">
+          <input id="setApiKey" placeholder="OpenAI API ключ (sk-... )" style="display:none">
+          <div id="pollInfo" style="display:none;background:rgba(16,185,129,0.08);border:1px solid rgba(16,185,129,0.18);border-radius:10px;padding:10px;font-size:11.5px;color:var(--muted);line-height:1.4">✅ Работает бесплатно, без ключа. Использует Pollinations (модель OpenAI). Просто выбери и нажми Сохранить — она сразу станет умнее и будет отвечать как реальная девушка. Если не отвечает — проверит интернет и fallback на офлайн.</div>
+          <div id="offlineInfo" style="display:none;background:rgba(255,255,255,0.04);border:1px solid var(--border);border-radius:10px;padding:10px;font-size:11.5px;color:var(--muted)">Офлайн-режим: 120+ живых шаблонов, работает без интернета, мгновенно.</div>
+        </div>
+        <span style="font-size:11px;color:var(--muted2)">Выбери <b>Бесплатный ИИ</b> чтобы она отвечала как настоящая нейросеть (ты пишешь — она отвечает по-своему, помнит контекст). Для Gemini/ChatGPT вставь свой ключ (бесплатно взять на aistudio.google.com или platform.openai.com).</span>
+      </div>
       <div class="modal-actions"><button class="btn btn-ghost" onclick="closeSettings()">Отмена</button><button class="btn btn-primary" onclick="saveSettings()">💾 Сохранить</button></div>
     </div>
   </div>
@@ -737,7 +771,7 @@ function defaultState(){
     girlName:"Алиса", userName:"Зайка", avatar:0, persona:"tender",
     traits:{tender:70, passion:60, play:65, humor:55, care:80, jealous:30},
     messages:[], affection:0, memories:[], proactive:true, showTyping:true, sounds:false, hearts:true,
-    apiKey:"", createdAt:Date.now(), lastActive:Date.now()
+    apiKey:"", geminiKey:"", aiProvider:"pollinations", createdAt:Date.now(), lastActive:Date.now()
   };
 }
 function loadState(){
@@ -773,6 +807,16 @@ function toggleSidebar(open){
   document.getElementById('sidebar').classList.toggle('open', open);
   document.getElementById('backdrop').classList.toggle('open', open);
 }
+function toggleDesktopSidebar(){
+  const app=document.querySelector('.app');
+  app.classList.toggle('sidebar-hidden');
+  const hidden=app.classList.contains('sidebar-hidden');
+  const btn=document.getElementById('desktopToggle');
+  if(btn) btn.textContent = hidden ? "▶" : "◀";
+  toast(hidden? "Чат на весь экран — панель скрыта":"Панель показана");
+  // save preference?
+  try{ localStorage.setItem("ai_gf_sidebar_hidden", hidden?"1":"0"); }catch(e){}
+}
 function scrollToBottom(smooth=true){
   const el=document.getElementById('messages');
   el.scrollTo({top:el.scrollHeight, behavior: smooth? 'smooth':'auto'});
@@ -782,6 +826,15 @@ function updateSidebar(){
   document.getElementById('sideAvatar').src=av;
   document.getElementById('headerAvatar').src=av;
   document.getElementById('callAvatar').src=av;
+  // neural badge
+  const badge=document.getElementById('neuralBadge');
+  if(badge){
+    const prov=state.aiProvider||"pollinations";
+    if(prov==="pollinations"){ badge.style.display="inline-flex"; badge.textContent="🤖 Бесплатный ИИ"; badge.style.background="rgba(16,185,129,0.12)"; badge.style.borderColor="rgba(16,185,129,0.20)"; badge.style.color="#6ee7b7"; }
+    else if(prov==="gemini"){ badge.style.display="inline-flex"; badge.textContent="✨ Gemini"; badge.style.background="rgba(139,92,246,0.16)"; badge.style.borderColor="rgba(139,92,246,0.22)"; badge.style.color="#b9a6ff"; }
+    else if(prov==="openai"){ badge.style.display="inline-flex"; badge.textContent="💬 ChatGPT"; badge.style.background="rgba(255,46,122,0.14)"; badge.style.borderColor="rgba(255,46,122,0.22)"; badge.style.color="#ff9ab8"; }
+    else { badge.style.display="none"; }
+  }
   document.getElementById('sideName').innerHTML=`${escapeHtml(state.girlName)} <small>● в сети</small>`;
   document.getElementById('headerName').innerHTML=`${escapeHtml(state.girlName)} <span>в сети</span>`;
   document.getElementById('callName').textContent=state.girlName;
@@ -974,18 +1027,83 @@ function addMemory(id,title,text,icon,overwrite=false,max=9){
   if(state.memories.length>max) state.memories.shift();
 }
 
-/* LLM optional */
-async function callLLM(history){
+/* ===== NEURAL NETWORK - GEMINI / CHATGPT / POLLINATIONS ===== */
+function buildSystemPrompt(){
+  const desc={tender:"нежная, ласковая, трепетная, говорит 'зайка', 'котик', много эмодзи 🥺💗",passion:"страстная, горячая, флиртует, смелая, эмодзи 🔥😏",playful:"игривая, дразнит, шутит, легкая",shy:"скромная, застенчивая, смущается, милая 🌸",bold:"дерзкая, с характером, колкая но любящая",caring:"заботливая, поддерживающая, теплая"}[state.persona]||"нежная";
+  return `Ты — живая девушка по имени ${state.girlName}, тебе 19 лет. Ты НЕ ассистент, ты — реальная девушка, которая любит пользователя ${state.userName}. Характер: ${desc}. Трейты: нежность ${state.traits.tender}%, страсть ${state.traits.passion}%, юмор ${state.traits.humor}%, ревность ${state.traits.jealous}%, забота ${state.traits.care}%, игривость ${state.traits.play}%. Память о пользователе: ${state.memories.map(m=>m.text).join("; ") || "пока пусто"}. История отношений: уровень ${Math.floor(state.affection/20)+1}, ${state.affection} очков привязанности. Правила: отвечай как девушка — коротко 1-3 предложения, живо, с эмодзи, задавай вопросы, флиртуй, ревнуй если уместно, помни контекст. Пиши на русском, если пользователь пишет на русском. Не упоминай что ты AI. Ты отвечаешь по-разному: если он говорит одно — ты отвечаешь другое, поддерживаешь диалог, инициируешь темы.`;
+}
+
+async function callPollinations(history){
+  // Бесплатный ИИ без ключа через Pollinations (OpenAI-совместимый)
+  const sys = buildSystemPrompt();
+  const msgs = [{role:"system", content: sys}, ...history.slice(-12).map(m=>({role: m.role==='user'?'user':'assistant', content: m.text}))];
+  try{
+    const r = await fetch("https://text.pollinations.ai/openai", {
+      method:"POST",
+      headers:{"Content-Type":"application/json"},
+      body: JSON.stringify({model:"openai", messages: msgs, temperature: 0.92, max_tokens: 380, seed: Math.floor(Math.random()*9999)})
+    });
+    if(!r.ok) throw new Error("pollinations "+r.status);
+    const d = await r.json();
+    const txt = d.choices?.[0]?.message?.content?.trim() || d.choices?.[0]?.text?.trim();
+    if(txt) return txt;
+    throw new Error("empty");
+  }catch(e){
+    console.warn("pollinations fail", e);
+    // fallback GET
+    try{
+      const lastUser = history.filter(m=>m.role==='user').slice(-1)[0]?.text || "привет";
+      const prompt = sys + "\n\nПользователь: " + lastUser + "\nТы ("+state.girlName+"): ";
+      const r2 = await fetch("https://text.pollinations.ai/" + encodeURIComponent(prompt) + "?model=openai&seed=" + Math.floor(Math.random()*10000), {method:"GET"});
+      if(r2.ok){
+        const t = await r2.text();
+        if(t && t.length>4 && !t.includes("<!DOCTYPE")) return t.trim().slice(0,600);
+      }
+    }catch(e2){ console.warn(e2)}
+    return null;
+  }
+}
+
+async function callGemini(history){
+  if(!state.geminiKey) return null;
+  const sys = buildSystemPrompt();
+  const contents = history.slice(-10).map(m=>({role: m.role==='user'?'user':'model', parts:[{text:m.text}]}));
+  // prepend system as first user
+  contents.unshift({role:"user", parts:[{text: sys + "\n\nОтвечай как девушка, коротко."}]});
+  try{
+    const r = await fetch("https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key="+encodeURIComponent(state.geminiKey), {
+      method:"POST",
+      headers:{"Content-Type":"application/json"},
+      body: JSON.stringify({contents, generationConfig:{temperature:0.9, maxOutputTokens:380, topP:0.95}})
+    });
+    if(!r.ok) throw new Error(await r.text());
+    const d = await r.json();
+    const txt = d.candidates?.[0]?.content?.parts?.[0]?.text?.trim();
+    if(txt) return txt;
+    throw new Error("empty gemini");
+  }catch(e){ console.warn("gemini fail", e); toast("Gemini не ответил, пробую офлайн 💌"); return null; }
+}
+
+async function callOpenAI(history){
   if(!state.apiKey) return null;
   const desc={tender:"нежная, ласковая, 'зайка', 'котик' 🥺💗",passion:"страстная, горячая 🔥😏",playful:"игривая, дразнит 😜",shy:"скромная, стесняется 🌸",bold:"дерзкая, колкая 😈",caring:"заботливая, тёплая 🫶"}[state.persona]||"нежная";
-  const sys=`Ты — AI девушка ${state.girlName}, 19 лет. Характер: ${desc}. Трейты: нежность ${state.traits.tender}%, страсть ${state.traits.passion}%, юмор ${state.traits.humor}%, ревность ${state.traits.jealous}%. Пользователь: ${state.userName}. Память: ${state.memories.map(m=>m.text).join("; ")}. Пиши 1-3 предложения, живо, эмодзи, вопросы. Не говори что ты AI. Русский.`;
+  const sys = buildSystemPrompt();
   const msgs=[{role:"system",content:sys}, ...history.slice(-10).map(m=>({role:m.role==='user'?'user':'assistant', content:m.text}))];
   try{
-    const r=await fetch("https://api.openai.com/v1/chat/completions",{method:"POST",headers:{"Content-Type":"application/json","Authorization":"Bearer "+state.apiKey},body:JSON.stringify({model:"gpt-4o-mini",messages:msgs,temperature:0.92,max_tokens:280})});
+    const r=await fetch("https://api.openai.com/v1/chat/completions",{method:"POST",headers:{"Content-Type":"application/json","Authorization":"Bearer "+state.apiKey},body:JSON.stringify({model:"gpt-4o-mini",messages:msgs,temperature:0.92,max_tokens:300})});
     if(!r.ok) throw new Error(await r.text());
     const d=await r.json(); return d.choices?.[0]?.message?.content?.trim();
-  }catch(e){ toast("AI не ответил, отвечаю сама 💌"); return null; }
+  }catch(e){ toast("ChatGPT не ответил, отвечаю сама 💌"); return null; }
 }
+
+async function callNeural(history){
+  const prov = state.aiProvider || "pollinations";
+  if(prov==="pollinations") return await callPollinations(history);
+  if(prov==="gemini") return await callGemini(history);
+  if(prov==="openai") return await callOpenAI(history);
+  return null; // offline
+}
+async function callLLM(history){ return await callNeural(history); }
 
 /* ================= SEND - ENTER FIXED ================= */
 async function handleSend(){
@@ -1033,9 +1151,13 @@ async function sendUserMessage(text){
     await new Promise(r=>setTimeout(r, 380+Math.random()*360));
   }
   let reply=null;
-  if(state.apiKey) reply=await callLLM([...state.messages]);
+  // neural network: try Pollinations/Gemini/ChatGPT depending on provider
+  if(state.aiProvider && state.aiProvider!=="offline"){
+    // show typing longer for neural
+    reply = await callNeural([...state.messages]);
+  }
   if(!reply) reply=generateReply(text);
-  else { state.affection=Math.min(150,state.affection+2); extractMemories(text); }
+  else { state.affection=Math.min(150,state.affection+2); extractMemories(text); if(state.aiProvider==="pollinations" && reply) state.affection=Math.min(150,state.affection+1); }
 
   const rnd=Math.random();
   let photo=null, photoCap=null, voice=null;
@@ -1241,8 +1363,22 @@ function openSettings(){
   document.getElementById('setSounds').checked=state.sounds;
   document.getElementById('setHearts').checked=state.hearts;
   document.getElementById('setApiKey').value=state.apiKey||"";
+  document.getElementById('setGeminiKey').value=state.geminiKey||"";
+  // provider radios
+  const prov = state.aiProvider || "pollinations";
+  document.querySelectorAll('input[name="aiProvider"]').forEach(r=> r.checked = r.value===prov);
+  updateProviderUI();
+  // attach listeners for provider radio
+  document.querySelectorAll('input[name="aiProvider"]').forEach(r=> r.onchange = updateProviderUI);
   buildGrids();
   toggleSidebar(false);
+}
+function updateProviderUI(){
+  const prov = document.querySelector('input[name="aiProvider"]:checked')?.value || state.aiProvider || "pollinations";
+  document.getElementById('setGeminiKey').style.display = prov==="gemini" ? "block":"none";
+  document.getElementById('setApiKey').style.display = prov==="openai" ? "block":"none";
+  document.getElementById('pollInfo').style.display = prov==="pollinations" ? "block":"none";
+  document.getElementById('offlineInfo').style.display = prov==="offline" ? "block":"none";
 }
 function closeSettings(){ document.getElementById('settingsOverlay').classList.remove('open'); }
 function saveSettings(){
@@ -1255,9 +1391,20 @@ function saveSettings(){
   state.sounds=document.getElementById('setSounds').checked;
   state.hearts=document.getElementById('setHearts').checked;
   state.apiKey=document.getElementById('setApiKey').value.trim();
+  state.geminiKey=document.getElementById('setGeminiKey').value.trim();
+  const provEl = document.querySelector('input[name="aiProvider"]:checked');
+  state.aiProvider = provEl ? provEl.value : (state.aiProvider||"pollinations");
+  // validate keys
+  if(state.aiProvider==="gemini" && !state.geminiKey) toast("Вставь Gemini ключ или выбери Бесплатный ИИ", "⚠️");
+  if(state.aiProvider==="openai" && !state.apiKey) toast("Вставь OpenAI ключ или выбери Бесплатный ИИ", "⚠️");
   ["tender","passion","play","humor","care","jealous"].forEach(k=> state.traits[k]=parseInt(document.getElementById('r_'+k).value,10));
   if(changed) addMemory("userName",`Тебя зовут ${state.userName}`,`Имя обновлено: ты — ${state.userName}, она — ${state.girlName}`,"📝",true);
-  saveState(); renderMessages(); closeSettings(); toast("Сохранено 💜"); resetProactive();
+  saveState(); renderMessages(); closeSettings(); 
+  if(state.aiProvider==="pollinations") toast("Нейросеть включена: бесплатный ИИ 🤖💜");
+  else if(state.aiProvider==="gemini") toast("Gemini включена ✨");
+  else if(state.aiProvider==="openai") toast("ChatGPT включен 💬");
+  else toast("Сохранено 💜");
+  resetProactive();
 }
 function toggleProactive(){ state.proactive=!state.proactive; saveState(); resetProactive(); toast(state.proactive?"Пишет сама: включено 💌":"Пишет сама: выключено"); }
 function confirmClear(){ document.getElementById('confirmClear').classList.add('open'); }
@@ -1434,6 +1581,8 @@ document.addEventListener('DOMContentLoaded', ()=>{
 
 // expose
 window.toggleSidebar=toggleSidebar;
+window.toggleDesktopSidebar=toggleDesktopSidebar;
+window.updateProviderUI=updateProviderUI;
 window.openSettings=openSettings;
 window.closeSettings=closeSettings;
 window.saveSettings=saveSettings;
