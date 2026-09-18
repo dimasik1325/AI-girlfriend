@@ -3,14 +3,19 @@
  * чтобы ключ можно было держать в .env на сервере, а не в браузере.
  *
  *   PORT=3000 LLM_PROVIDER=openai LLM_API_KEY=sk-... node server.js
+ *
+ * Режим start.bat: AUTO_EXIT=1 — страница сама держит SSE-соединение /api/live,
+ * и когда вкладку закрывают, сервер завершается, а консольное окно гаснет.
  */
 
-import http from 'node:http';
-import { readFile } from 'node:fs/promises';
-import { extname, join, normalize, resolve } from 'node:path';
-import { fileURLToPath } from 'node:url';
+'use strict';
 
-const ROOT = resolve(fileURLToPath(new URL('.', import.meta.url)));
+const http = require('node:http');
+const { exec } = require('node:child_process');
+const { readFile } = require('node:fs/promises');
+const { extname, join, normalize, resolve } = require('node:path');
+
+const ROOT = resolve(__dirname);
 const PORT = Number(process.env.PORT || 3000);
 const HOST = process.env.HOST || '0.0.0.0';
 
@@ -29,7 +34,6 @@ const MIME = {
   '.jpg': 'image/jpeg',
   '.svg': 'image/svg+xml',
   '.ico': 'image/x-icon',
-  '.webmanifest': 'application/manifest+json',
 };
 
 function serverProvider() {
@@ -80,6 +84,55 @@ async function serveStatic(req, res, pathname) {
   }
 }
 
+/* --------------------------------------------------------------- live */
+/* Страница держит SSE-соединение, пока открыта. Закрыли вкладку — соединение
+   оборвалось; если больше никто не смотрит, в режиме AUTO_EXIT гасим сервер. */
+
+let liveConnections = 0;
+let everLive = false;
+let exitTimer = null;
+
+function liveOpen(res) {
+  liveConnections += 1;
+  everLive = true;
+  if (exitTimer) {
+    clearTimeout(exitTimer);
+    exitTimer = null;
+  }
+  res.on('close', liveClose);
+}
+
+function liveClose() {
+  liveConnections = Math.max(0, liveConnections - 1);
+  if (liveConnections === 0 && everLive && process.env.AUTO_EXIT) {
+    // даём пару секунд на перезагрузку страницы, потом гасим консоль
+    exitTimer = setTimeout(() => {
+      console.log('Страница закрыта — завершаюсь.');
+      process.exit(0);
+    }, 5000);
+  }
+}
+
+function handleLive(req, res) {
+  res.writeHead(200, {
+    'Content-Type': 'text/event-stream; charset=utf-8',
+    'Cache-Control': 'no-store',
+    Connection: 'keep-alive',
+  });
+  res.write(': connected\n\n');
+  const ping = setInterval(() => {
+    try {
+      res.write(': ping\n\n');
+    } catch {
+      /* клиент уже ушёл */
+    }
+  }, 10000);
+  res.on('close', () => clearInterval(ping));
+  liveOpen(res);
+}
+
+/* ------------------------------------------------------------- router */
+
 const server = http.createServer(async (req, res) => {
   const url = new URL(req.url || '/', 'http://localhost');
   res.setHeader('Access-Control-Allow-Origin', '*');
@@ -92,6 +145,11 @@ const server = http.createServer(async (req, res) => {
 
   if (url.pathname === '/api/health') {
     json(res, 200, { ok: true, name: 'AI Girlfriend' });
+    return;
+  }
+
+  if (url.pathname === '/api/live') {
+    handleLive(req, res);
     return;
   }
 
@@ -159,17 +217,37 @@ const server = http.createServer(async (req, res) => {
   res.writeHead(404).end('Не найдено');
 });
 
-export { server, serverProvider, ROOT };
+server.on('error', (err) => {
+  console.error('Не удалось запустить сервер:', err.message);
+  process.exit(1);
+});
 
-const isMain = process.argv[1] && resolve(process.argv[1]) === fileURLToPath(import.meta.url);
-if (isMain) {
-  server.listen(PORT, HOST, () => {
-    const p = serverProvider();
-    console.log(`AI Girlfriend: http://localhost:${PORT}`);
-    console.log(
-      p
-        ? `Ключ сервера: ${p.id} (${p.model || 'модель по умолчанию'})`
-        : 'Ключ сервера не задан — сайт сам спросит ключ в браузере или включит офлайн-режим'
-    );
+/* -------------------------------------------------------- автозапуск */
+
+function openBrowser(url) {
+  const cmd =
+    process.platform === 'win32'
+      ? 'start "" "' + url + '"'
+      : process.platform === 'darwin'
+        ? 'open "' + url + '"'
+        : 'xdg-open "' + url + '"';
+  exec(cmd, () => {
+    /* если браузера нет — просто откроешь руками */
   });
 }
+
+if (require.main === module) {
+  server.listen(PORT, HOST, () => {
+    const p = serverProvider();
+    const url = 'http://localhost:' + PORT;
+    console.log('AI Girlfriend: ' + url);
+    console.log(
+      p
+        ? 'Ключ сервера: ' + p.id + ' (' + (p.model || 'модель по умолчанию') + ')'
+        : 'Ключ сервера не задан — сайт сам спросит ключ в браузере или включит офлайн-режим'
+    );
+    if (process.env.NO_OPEN !== '1') openBrowser(url);
+  });
+}
+
+module.exports = { server, serverProvider, ROOT };

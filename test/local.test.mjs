@@ -1,15 +1,9 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 
-import {
-  suggestNames,
-  similarity,
-  detectIntent,
-  learnFacts,
-  localReply,
-  petName,
-  mulberry,
-} from '../js/local.js';
+import local from '../js/local.js';
+
+const { suggestNames, similarity, detectIntent, learnFacts, localReply, petName, mulberry } = local;
 
 test('suggestNames предлагает 4 разных имени из пула', () => {
   const names = suggestNames('', 42);

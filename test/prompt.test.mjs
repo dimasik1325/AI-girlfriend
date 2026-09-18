@@ -1,14 +1,9 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 
-import {
-  buildSystemPrompt,
-  buildMessages,
-  detectMood,
-  levelIndex,
-  PASSION_LABELS,
-  LEVELS,
-} from '../js/prompt.js';
+import prompt from '../js/prompt.js';
+
+const { buildSystemPrompt, buildMessages, detectMood, levelIndex, PASSION_LABELS, LEVELS } = prompt;
 
 test('buildSystemPrompt вставляет имена и держит личность', () => {
   const prompt = buildSystemPrompt({

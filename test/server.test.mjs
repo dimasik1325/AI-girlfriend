@@ -5,7 +5,8 @@ import { join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 
 process.env.PORT = '0';
-const { server, ROOT } = await import('../server.js');
+const serverMod = await import('../server.js');
+const { server, ROOT } = serverMod.default || serverMod;
 
 async function listen() {
   await new Promise((res) => server.listen(0, '127.0.0.1', res));
@@ -140,13 +141,10 @@ test('все файлы из index.html реально лежат на диск�
   }
 });
 
-test('index.html ссылается на все модули js/', async () => {
+test('index.html подключает все скрипты в правильном порядке', async () => {
   const html = await readFile(join(ROOT, 'index.html'), 'utf8');
-  assert.match(html, /js\/app\.js/);
-  const app = await readFile(join(ROOT, 'js/app.js'), 'utf8');
-  for (const mod of ['./store.js', './providers.js', './prompt.js', './local.js']) {
-    assert.ok(app.includes(mod), 'app.js не импортирует ' + mod);
-  }
+  const scripts = [...html.matchAll(/<script src="(js\/[a-z]+\.js)"><\/script>/g)].map((m) => m[1]);
+  assert.deepEqual(scripts, ['js/prompt.js', 'js/providers.js', 'js/local.js', 'js/store.js', 'js/app.js']);
 });
 
 test('в репозитории нет файла с реальным ключом', async () => {

@@ -1,8 +1,10 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 
-import { memoryStorage } from './helpers.js';
-import {
+import { memoryStorage } from './helpers.mjs';
+import providers from '../js/providers.js';
+
+const {
   PROVIDERS,
   detectProviders,
   guessProvider,
@@ -13,7 +15,7 @@ import {
   extractError,
   chatOnce,
   pickWorkingProvider,
-} from '../js/providers.js';
+} = providers;
 
 function jsonResponse(status, payload) {
   return {

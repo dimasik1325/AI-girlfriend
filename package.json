@@ -1,13 +1,12 @@
 {
   "name": "ai-girlfriend",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "private": true,
-  "type": "module",
   "description": "Сайт-чат с нейросетью-девушкой: придумываешь ей имя, рассказываешь о себе, настраиваешь характер и общаешься.",
   "scripts": {
     "start": "node server.js",
     "dev": "node server.js",
-    "test": "node --test \"test/*.test.js\""
+    "test": "node --test \"test/*.test.mjs\""
   },
   "engines": {
     "node": ">=18"

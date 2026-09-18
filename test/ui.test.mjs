@@ -49,6 +49,18 @@ test('все обработчики навешиваются на существ
   }
 });
 
+test('app.js берёт модули из глобального AIGF (работает без сборщика)', async () => {
+  const app = await read('js/app.js');
+  assert.match(app, /window\.AIGF/);
+  for (const ns of ['A.store.createStore', 'A.providers', 'A.prompt', 'A.local']) {
+    assert.ok(app.includes(ns), 'app.js не использует ' + ns);
+  }
+  for (const file of ['js/prompt.js', 'js/providers.js', 'js/local.js', 'js/store.js']) {
+    const src = await read(file);
+    assert.ok(!/^\s*(import|export)\s/m.test(src), file + ' должен быть обычным скриптом (без import/export)');
+  }
+});
+
 test('app.js использует все четыре настроения аватара', async () => {
   const app = await read('js/app.js');
   assert.match(app, /assets\/her\/'\s*\+\s*safe\s*\+\s*'.jpg/);

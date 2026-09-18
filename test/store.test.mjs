@@ -1,8 +1,10 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 
-import { createStore } from '../js/store.js';
-import { memoryStorage } from './helpers.js';
+import storeMod from '../js/store.js';
+import { memoryStorage } from './helpers.mjs';
+
+const { createStore } = storeMod;
 
 test('store сохраняет профиль, сообщения и память', () => {
   const store = createStore(memoryStorage());
