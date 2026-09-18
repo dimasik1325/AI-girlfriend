@@ -1,0 +1,162 @@
+<!doctype html>
+<html lang="ru">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+    <title>AI Girlfriend — твоя виртуальная девушка</title>
+    <meta name="description" content="Придумай ей имя, расскажи о себе, настрой характер — и общайся с нейросетью-девушкой вживую." />
+    <meta name="theme-color" content="#150a1f" />
+    <link rel="icon" href="assets/her/smile.jpg" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Comfortaa:wght@400;600;700&family=Manrope:wght@400;600;800&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <div class="bg" aria-hidden="true">
+      <div class="orb orb-1"></div>
+      <div class="orb orb-2"></div>
+      <div class="orb orb-3"></div>
+      <div class="hearts" id="hearts"></div>
+    </div>
+
+    <!-- ===================== ЭКРАН 1: ЗНАКОМСТВО ===================== -->
+    <main class="screen" id="screen-setup">
+      <section class="card wizard">
+        <header class="wizard-head">
+          <span class="logo">♥</span>
+          <h1>AI Girlfriend</h1>
+          <p class="sub">Создай свою девушку и общайся с ней как с настоящей</p>
+          <ol class="steps" id="steps-dots">
+            <li data-step="0" class="active"><span>1</span>Ты</li>
+            <li data-step="1"><span>2</span>Её имя</li>
+            <li data-step="2"><span>3</span>Характер</li>
+            <li data-step="3"><span>4</span>Нейросеть</li>
+          </ol>
+        </header>
+
+        <!-- Шаг 1 -->
+        <div class="step" data-step="0">
+          <h2>Как тебя зовут?</h2>
+          <p class="hint">Так она будет к тебе обращаться всю переписку.</p>
+          <input id="in-user-name" class="field" type="text" maxlength="24" placeholder="Например, Дима" autocomplete="given-name" />
+          <div class="row">
+            <button class="btn primary" id="btn-step0-next" disabled>Дальше</button>
+          </div>
+        </div>
+
+        <!-- Шаг 2 -->
+        <div class="step" data-step="1" hidden>
+          <h2>Придумай ей имя</h2>
+          <p class="hint">Выбери из предложенных или напиши своё — она отзовётся.</p>
+          <div class="names" id="name-suggestions"></div>
+          <div class="name-custom">
+            <input id="in-girl-name" class="field" type="text" maxlength="24" placeholder="Своё имя..." />
+            <button class="btn ghost" id="btn-reroll" title="Другие варианты">↻</button>
+          </div>
+          <div class="row between">
+            <button class="btn ghost" data-back>Назад</button>
+            <button class="btn primary" id="btn-step1-next" disabled>Дальше</button>
+          </div>
+        </div>
+
+        <!-- Шаг 3 -->
+        <div class="step" data-step="2" hidden>
+          <h2>Настрой её характер</h2>
+          <p class="hint">Ползунки меняют то, как она с тобой говорит. Всё можно поменять и потом.</p>
+          <div class="sliders" id="sliders"></div>
+          <div class="personas">
+            <p class="hint">Типаж:</p>
+            <div class="chips" id="personas"></div>
+          </div>
+          <div class="row between">
+            <button class="btn ghost" data-back>Назад</button>
+            <button class="btn primary" id="btn-step2-next">Дальше</button>
+          </div>
+        </div>
+
+        <!-- Шаг 4 -->
+        <div class="step" data-step="3" hidden>
+          <h2>Подключим нейросеть</h2>
+          <p class="hint">
+            Ключ подхватится автоматически: сначала проверю сервер, потом ключ в браузере.
+            Если ключа нет — она будет отвечать встроенным движком прямо сейчас, без интернета.
+          </p>
+          <div class="provider-list" id="provider-list"></div>
+          <div class="provider-status" id="provider-status">Ищу доступный ключ...</div>
+          <details class="provider-details">
+            <summary>У меня есть ключ — вставить</summary>
+            <div class="provider-form">
+              <label>
+                Провайдер
+                <select id="in-provider"></select>
+              </label>
+              <label>
+                Ключ API
+                <input id="in-api-key" class="field" type="password" placeholder="sk-... / sk-or-... / gsk_..." autocomplete="off" />
+              </label>
+              <small class="hint">Ключ хранится только в твоём браузере (localStorage) и уходит напрямую провайдеру.</small>
+              <button class="btn ghost" id="btn-save-key">Сохранить и проверить</button>
+            </div>
+          </details>
+          <div class="row between">
+            <button class="btn ghost" data-back>Назад</button>
+            <button class="btn primary" id="btn-start">Начать общение</button>
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <!-- ===================== ЭКРАН 2: ЧАТ ===================== -->
+    <main class="screen chat-screen" id="screen-chat" hidden>
+      <aside class="side">
+        <div class="avatar-wrap">
+          <img id="avatar" src="assets/her/smile.jpg" alt="Её аватар" />
+          <span class="pulse"></span>
+        </div>
+        <h2 id="her-name">Она</h2>
+        <p class="side-status" id="her-status">в сети</p>
+        <p class="side-tag" id="her-tag"></p>
+        <p class="side-engine" id="engine-label"></p>
+        <div class="side-actions">
+          <button class="btn tiny ghost" id="btn-voice" aria-pressed="true">🔊 Голос: вкл</button>
+          <button class="btn tiny ghost" id="btn-settings">⚙ Настройки</button>
+          <button class="btn tiny ghost" id="btn-restart">↺ Новая девушка</button>
+        </div>
+      </aside>
+
+      <section class="chat">
+        <div class="messages" id="messages"></div>
+        <form class="composer" id="composer">
+          <input id="in-message" type="text" maxlength="1000" placeholder="Напиши ей..." autocomplete="off" />
+          <button class="btn primary send" type="submit" aria-label="Отправить">➤</button>
+        </form>
+      </section>
+
+      <dialog class="modal" id="settings-modal">
+        <form method="dialog" class="modal-body">
+          <h3>Настройки</h3>
+          <div id="settings-sliders" class="sliders compact"></div>
+          <label class="lbl">
+            Нейросеть
+            <select id="set-provider"></select>
+          </label>
+          <label class="lbl">
+            Модель
+            <select id="set-model"></select>
+          </label>
+          <label class="lbl">
+            Ключ API
+            <input id="set-api-key" class="field" type="password" placeholder="оставь пустым, чтобы взять с сервера" autocomplete="off" />
+          </label>
+          <div class="modal-actions">
+            <button class="btn ghost" value="cancel">Закрыть</button>
+            <button class="btn primary" id="btn-apply-settings" value="ok">Сохранить</button>
+          </div>
+        </form>
+      </dialog>
+    </main>
+
+    <script type="module" src="js/app.js"></script>
+  </body>
+</html>
